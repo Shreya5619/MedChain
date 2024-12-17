@@ -1,55 +1,100 @@
+import sys
+sys.path.append('C:\\Users\\Shreya Prasad\\Desktop\\MedChain')
+from flask_cors import CORS
 from flask import Flask, render_template, request, jsonify
 from Blockchain.Backend.core.Tx import Trans
-from Blockchain.Backend.core.blockchain import Blockchain
+from Blockchain.Backend.core.blockchain import Blockchain  # Import the Blockchain class
 
 app = Flask(__name__)
 
-@app.route("/", methods=["GET", "POST"])
-def wallet():
+CORS(app, supports_credentials=True, resources={r"/*": {"origins": "*"}})
+
+# Initialize blockchain instance
+blockchain = Blockchain()
+
+@app.route("/add", methods=["GET", "POST"])
+def add():
     if request.method == "POST":
         # Extract details from the request body
         data = request.get_json()
-
+        # Required fields to simulate a blockchain transaction
         drug_name = data.get("drug_name")
         batch = data.get("batch")
-        manufacturer = data.get("manufacturer")
-        distributor = data.get("distributor")
+        sender = data.get("sender")
+        receiver = data.get("receiver")
         status = data.get("status")
         location = data.get("location")
+        print(drug_name, batch, sender, receiver, status, location)
 
-        # Validate required fields
-        if not all([drug_name, batch, manufacturer, distributor, status, location]):
+        # Validate that all fields are provided
+        if not all([drug_name, batch, sender, receiver, status, location]):
             return jsonify({"message": "All fields are required"}), 400
+        
 
-        # Create a new transaction object
+        # Try creating a new transaction object
         try:
+            # Create the transaction object
             tx = Trans(
-                tx_id=f"tx_{hash(drug_name + batch)}",
-                drug_name=drug_name,
-                batch=batch,
-                manufacturer=manufacturer,
-                distributor=distributor,
+                transaction_id=f"tx_{hash(drug_name + batch)}",  # Unique tx_id generation
+                drug_id=drug_name,
+                batch_id=batch,
+                sender=sender,
+                receiver=receiver,
                 status=status,
-                location=location
+                location=location,
             )
 
-            # Simulate adding the transaction to the mempool
-            if not hasattr(app, "MEMPOOL"):
-                app.MEMPOOL = {}
+            # Add the transaction to the blockchain on successful creation
+            blockchain.main(sender,tx.transaction_id,drug_name,batch,receiver,status,location)
+            print("Transaction added to the blockchain")
 
-            app.MEMPOOL[tx.tx_id] = tx.to_dict()
-            return jsonify({"message": "Transaction added to memory pool", "transaction": tx.to_dict()}), 200
+            # Return a successful response with transaction details
+            return jsonify({"message": "Transaction successfully created and added to blockchain", "transaction": tx.to_dict()}), 200
+
         except Exception as e:
-            return jsonify({"message": f"Error creating transaction: {str(e)}"}), 500
+            # Handle error if transaction creation fails
+            return jsonify({"message": f"Transaction creation failed: {str(e)}"}), 500
 
-    # For GET requests, return a message or a form if needed
-    return render_template("wallet.html", message="Send a POST request with transaction details.")
+@app.route("/genId", methods=["GET", "POST"])
+def genId():
+    if request.method == "POST":
+        # Extract details from the request body
+        data = request.get_json()
+        # Required fields to simulate a blockchain transaction
+        drug_name = data.get("drug_name")
+        batch = data.get("batch")
+        manDate = data.get("manu_date")
+        expDate = data.get("exp_date")
 
+        # Validate that all fields are provided
+        if not all([drug_name, batch,manDate,expDate]):
+            return jsonify({"message": "All fields are required"}), 400
+        
+        try:
+            # Create the transaction object
+            tx = Trans(
+                transaction_id=f"{hash(drug_name + batch + manDate + expDate)}",  # Unique tx_id generation
+                drug_id=drug_name,
+                batch_id=batch,
+                sender="Manufactured",
+                receiver="Manufactured",
+                status="Manufactured",
+                location="",
+            )
 
-def main(utxos=None, mempool=None):
-    # Initialize the global UTXOS and MEMPOOL
-    app.UTXOS = utxos if utxos else {}
-    app.MEMPOOL = mempool if mempool else {}
+            # Add the transaction to the blockchain on successful creation
+            blockchain.main(tx.sender,tx.transaction_id,drug_name,batch,tx.receiver,tx.status,tx.location)
+            print("Drug created and added to blockchain successfully!")
+
+            # Return a successful response with transaction details
+            return jsonify({"message": "Drug successfully created and added to blockchain", "drug_id": tx.transaction_id}), 200
+
+        except Exception as e:
+            # Handle error if transaction creation fails
+            return jsonify({"message": f"Drug creation failed: {str(e)}"}), 500
+
+def main():
+    # Start the Flask application
     app.run(debug=True)
 
 
