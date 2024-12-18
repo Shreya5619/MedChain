@@ -13,20 +13,45 @@ const IntermediaryDashboard = () => {
         setFormData({ ...formData, [name]: value });
     };
 
-    const handleUpload = () => {
-        setDrugs([...drugs, formData]);
-        setFormData({
-            dateoftransaction: "",
-            quantitysold: "",
-            otherdetails: "",
-        });
-    };
+
+    const handleUpload = async () => {
+        try {
+          const response = await fetch("http://localhost:5000/add", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                drug_name : formData.drugName,
+                batch : formData.batchNumber,
+                sender : "Person A",
+                receiver :"Person B",
+                status : "in-transit",
+                location : "Unknown"
+            }),
+          });
+          const result = await response.json();
+          if (response.ok) {
+            setDrugs([...drugs, formData]);
+            setFormData({
+                dateoftransaction: "",
+                quantitysold: "",
+                otherdetails: "",
+            });
+          } else {
+            alert("Failed to add transaction");
+          }
+        } catch (error) {
+          console.error("Error:", error);
+        }
+      };
+    
 
     return (
         <div className="bg-violet-200 min-h-screen flex flex-col items-center p-6">
             <div class="grid grid-flow-col text-center p-2">
                 <div class="shadow-sm flex-1 bg-violet-600 rounded-lg"><h2>MedChain</h2>
-                    <div className="w-full max-w-md bg-white p-6 rounded-lg shadow-md border">
+                    <div className="w-full max-w-md bg-white p-6 rounded-lg shadow-md border space-y-2">
                         <h2 className="text-2xl font-bold text-center text-purple-600 mb-4">
                             Intermediary
                         </h2>
@@ -38,7 +63,7 @@ const IntermediaryDashboard = () => {
                             name="transactionDate"
                             value={formData.transactionDate}
                             onChange={handleChange}
-                            className="w-full p-2 border rounded-md"
+                            className="w-full p-2 border rounded-md space-y-2"
                         />
                         <h3 align="left">Quantity Sold</h3>
                         <input
@@ -47,16 +72,16 @@ const IntermediaryDashboard = () => {
                             name="quantity"
                             value={formData.quantity}
                             onCHange={handleChange}
-                            className="w-full p-2 border rounded-md"
+                            className="w-full p-2 border rounded-md space-y-2"
                         />
-                        <h3 align="left">Detailsd</h3>
+                        <h3 align="left">Details</h3>
                         <input
                             type="text"
                             placeholder="Other details"
                             name="details"
                             value={formData.quantity}
                             onCHange={handleChange}
-                            className="w-full p-2 border rounded-md"
+                            className="w-full p-2 border rounded-md space-y-2"
                         />
                         <button className="w-full py-2 bg-purple-600 text-white rounded-md"
                             onClick={handleUpload}

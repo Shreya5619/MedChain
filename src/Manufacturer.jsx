@@ -18,6 +18,7 @@ const ManufacturerDashboard = () => {
 
   const handleUpload = async () => {
     try {
+      console.log(1)
       const response = await fetch("http://localhost:5000/genId", {
         method: "POST",
         headers: {
@@ -81,11 +82,12 @@ const ManufacturerDashboard = () => {
 
   return (
     <div className="bg-violet-200 min-h-screen flex flex-col items-center p-6">
-      <div className="grid grid-flow-col text-center p-2">
-        <div className="shadow-sm flex-1 bg-violet-600 rounded-lg">
-          <h2 className="text-white text-xl p-2">MedChain</h2>
-          <div className="w-full max-w-md bg-white p-6 rounded-lg shadow-md border">
-            <h2 className="text-2xl font-bold text-center text-purple-600 mb-4">Manufacturer Section</h2>
+            <div class="grid grid-flow-col text-center p-2">
+                <div class="shadow-sm flex-1 bg-violet-600 rounded-lg"><h2>MedChain</h2>
+                    <div className="w-full max-w-md bg-white p-6 rounded-lg shadow-md border space-y-2">
+                        <h2 className="text-2xl font-bold text-center text-purple-600 mb-4">
+                            Manufacturer Dashboard
+                        </h2>
             <div className="space-y-4">
               <h3>Drug Name</h3>
               <input
@@ -131,7 +133,7 @@ const ManufacturerDashboard = () => {
               </button>
             </div>
           </div>
-        </div>
+          </div>
       </div>
 
       <div className="w-full max-w-md mt-6 bg-white p-4 rounded-lg shadow-md">

@@ -63,18 +63,14 @@ def genId():
         # Required fields to simulate a blockchain transaction
         drug_name = data.get("drug_name")
         batch = data.get("batch")
-        manDate = data.get("manu_date")
+        manu_date = data.get("manu_date")
         expDate = data.get("exp_date")
 
-        # Validate that all fields are provided
-        if not all([drug_name, batch,manDate,expDate]):
-            return jsonify({"message": "All fields are required"}), 400
-        drugid=Blockchain.create_unique_drug_id(drug_name,"manufacturer",batch,expDate,manDate)
         try:
             # Create the transaction object
             tx = Trans(
-                transaction_id=f"{abs(hash(drug_name + batch + manDate + expDate))}",  # Unique tx_id generation
-                drug_id=drugid,
+                transaction_id=f"{abs(hash(drug_name + batch + manu_date + expDate))}",  # Unique tx_id generation
+                drug_id=drug_name,
                 batch_id=batch,
                 sender="Manufactured",
                 receiver="Manufactured",
