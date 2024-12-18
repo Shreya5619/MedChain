@@ -30,10 +30,15 @@ const ManufacturerDashboard = () => {
           exp_date: formData.expiryDate,
         }),
       });
-
       const result = await response.json();
       if (response.ok) {
-        alert(`Drug ID generated: ${result.drug_id}`);
+        setDrugs([...drugs, formData]);
+        setFormData({
+            drugName: "",
+            batchNumber: "",
+            manufacturingDate: "",
+            expiryDate: "",
+        });
       } else {
         alert("Failed to generate Drug ID");
       }

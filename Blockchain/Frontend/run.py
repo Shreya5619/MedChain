@@ -1,7 +1,7 @@
 import sys
 sys.path.append('C:\\Users\\Shreya Prasad\\Desktop\\MedChain')
 from flask_cors import CORS
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, request, jsonify
 from Blockchain.Backend.core.Tx import Trans
 from Blockchain.Backend.core.blockchain import Blockchain  # Import the Blockchain class
 
@@ -73,7 +73,7 @@ def genId():
         try:
             # Create the transaction object
             tx = Trans(
-                transaction_id=f"{hash(drug_name + batch + manDate + expDate)}",  # Unique tx_id generation
+                transaction_id=f"{abs(hash(drug_name + batch + manDate + expDate))}",  # Unique tx_id generation
                 drug_id=drug_name,
                 batch_id=batch,
                 sender="Manufactured",
@@ -81,7 +81,7 @@ def genId():
                 status="Manufactured",
                 location="",
             )
-
+            print(tx)
             # Add the transaction to the blockchain on successful creation
             blockchain.main(tx.sender,tx.transaction_id,drug_name,batch,tx.receiver,tx.status,tx.location)
             print("Drug created and added to blockchain successfully!")
