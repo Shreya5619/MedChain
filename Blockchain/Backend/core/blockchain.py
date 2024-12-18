@@ -35,7 +35,6 @@ class Blockchain:
 
     def addBlock(self, BlockHeight, prevBlockHash, manufacturer, trans_id=None, drug_id=None, batch_id=None, dist=None, status=None, location=None):
         timestamp = int(time.time())
-        
         # If no transaction data is provided, create a default empty transaction.
         if trans_id and drug_id and batch_id and dist and status and location:
             trans = Trans(trans_id, drug_id, batch_id, manufacturer, dist, status, location)
@@ -51,6 +50,7 @@ class Blockchain:
         blockheader.mine()  # Mining the block (will need implementation based on difficulty)
         
         # Write block data to disk.
+        
         block_data = Block(BlockHeight, 1, blockheader.__dict__, 1, transaction_data).__dict__
         self.write_on_disk([block_data])
 

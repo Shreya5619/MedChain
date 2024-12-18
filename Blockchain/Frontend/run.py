@@ -69,17 +69,17 @@ def genId():
         # Validate that all fields are provided
         if not all([drug_name, batch,manDate,expDate]):
             return jsonify({"message": "All fields are required"}), 400
-        
+        drugid=Blockchain.create_unique_drug_id(drug_name,"manufacturer",batch,expDate,manDate)
         try:
             # Create the transaction object
             tx = Trans(
                 transaction_id=f"{abs(hash(drug_name + batch + manDate + expDate))}",  # Unique tx_id generation
-                drug_id=drug_name,
+                drug_id=drugid,
                 batch_id=batch,
                 sender="Manufactured",
                 receiver="Manufactured",
                 status="Manufactured",
-                location="",
+                location="unknown",
             )
             print(tx)
             # Add the transaction to the blockchain on successful creation
@@ -91,6 +91,7 @@ def genId():
 
         except Exception as e:
             # Handle error if transaction creation fails
+            print(e)
             return jsonify({"message": f"Drug creation failed: {str(e)}"}), 500
 
 def main():
