@@ -80,7 +80,7 @@ const IntermediaryDashboard = () => {
                             placeholder="Other details"
                             name="details"
                             value={formData.quantity}
-                            onCHange={handleChange}
+                            onChange={handleChange}
                             className="w-full p-2 border rounded-md space-y-2"
                         />
                         <button className="w-full py-2 bg-purple-600 text-white rounded-md"
