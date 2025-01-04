@@ -373,5 +373,35 @@
         },
         "Txcount": 1,
         "Txs": "{\"TransactionID\": \"7993939573433754230\", \"DrugID\": \"Paracetamol\", \"BatchID\": \"B1234\", \"Sender\": \"Manufactured\", \"Receiver\": \"Manufactured\", \"Status\": \"Manufactured\", \"Location\": \"unknown\", \"Timestamp\": 1734518670}"
+    },
+    {
+        "Height": 24,
+        "Blocksize": 1,
+        "BlockHeader": {
+            "version": 1,
+            "prevBlockHash": "0000d710993c5c2e4299910678ac1be6567ecc5445e4d0658dee0379fe1570bb",
+            "merkleRoot": "d57fba8fba001b5847fcdffbf3f44eebebe89977c13d27e268adb94a90cac912",
+            "timestamp": 1735967510,
+            "bits": "ffff001f",
+            "nonce": 145297,
+            "blockHash": "00002f53f5a99fd3fea0bfe4fc8745570edea4cc2d1e73e0d9f4915e92e4a64d"
+        },
+        "Txcount": 1,
+        "Txs": "{\"TransactionID\": \"5229669343455277319\", \"DrugID\": \"Para\", \"BatchID\": \"B1231AS\", \"Sender\": \"Manufactured\", \"Receiver\": \"Manufactured\", \"Status\": \"Manufactured\", \"Location\": \"unknown\", \"Timestamp\": 1735967510}"
+    },
+    {
+        "Height": 25,
+        "Blocksize": 1,
+        "BlockHeader": {
+            "version": 1,
+            "prevBlockHash": "00002f53f5a99fd3fea0bfe4fc8745570edea4cc2d1e73e0d9f4915e92e4a64d",
+            "merkleRoot": "87149954a6af5f9656ea3b985d31ad535575b8d9a8bc6972c4e2f3a28fd86a00",
+            "timestamp": 1735967515,
+            "bits": "ffff001f",
+            "nonce": 39663,
+            "blockHash": "000045d67acfdc7148aae8f037c96a07167c3c74fa8ad0763cf16b30349394af"
+        },
+        "Txcount": 1,
+        "Txs": "{\"TransactionID\": \"5229669343455277319\", \"DrugID\": \"Para\", \"BatchID\": \"B1231AS\", \"Sender\": \"Manufactured\", \"Receiver\": \"Manufactured\", \"Status\": \"Manufactured\", \"Location\": \"unknown\", \"Timestamp\": 1735967515}"
     }
 ]
