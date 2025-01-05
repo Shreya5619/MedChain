@@ -82,8 +82,7 @@ const DrugTransactionCard: React.FC = () => {
             </Card>
           )}
         />
-      ) : (
-        <Text>No data found for the provided drug name.</Text>
+      ) : (<></>
       )}
     </div>
   );

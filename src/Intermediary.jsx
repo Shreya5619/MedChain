@@ -1,99 +1,70 @@
 import { useState } from "react";
+import IntermediaryAdd from "./components/intermediaryadd";
+import IntNav from "./components/intnav";
 
 const IntermediaryDashboard = () => {
-    const [drugs, setDrugs] = useState([]);
-    const [formData, setFormData] = useState({
-        dateoftransaction: "",
-        quantitysold: "",
-        otherdetails: "",
-    });
+  const [drugs, setDrugs] = useState([]);
+  const [formData, setFormData] = useState({
+    transactionDate: "",
+    quantity: "",
+    details: "",
+  });
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData({ ...formData, [name]: value });
-    };
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
 
+  const handleUpload = async () => {
+    try {
+      const response = await fetch("http://localhost:5000/add", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          drug_name: formData.drugName,
+          batch: formData.batchNumber,
+          sender: "Person A",
+          receiver: "Person B",
+          status: "in-transit",
+          location: "Unknown",
+        }),
+      });
+      const result = await response.json();
+      if (response.ok) {
+        setDrugs([...drugs, formData]);
+        setFormData({
+          transactionDate: "",
+          quantity: "",
+          details: "",
+        });
+      } else {
+        alert("Failed to add transaction");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
 
-    const handleUpload = async () => {
-        try {
-          const response = await fetch("http://localhost:5000/add", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                drug_name : formData.drugName,
-                batch : formData.batchNumber,
-                sender : "Person A",
-                receiver :"Person B",
-                status : "in-transit",
-                location : "Unknown"
-            }),
-          });
-          const result = await response.json();
-          if (response.ok) {
-            setDrugs([...drugs, formData]);
-            setFormData({
-                dateoftransaction: "",
-                quantitysold: "",
-                otherdetails: "",
-            });
-          } else {
-            alert("Failed to add transaction");
-          }
-        } catch (error) {
-          console.error("Error:", error);
-        }
-      };
+  return (
+    <div className="bg-gradient-to-r from-blue-500 to-purple-600 min-h-screen flex flex-col text-white">
+<IntNav/>
+
+  {/* Main Content */}
+  <div className="flex-grow flex items-center justify-center">
     
+    {/* Background Overlay */}
+    {/* <div className="absolute inset-0 bg-opacity-60 bg-black"></div> */}
 
-    return (
-        <div className="bg-violet-200 min-h-screen flex flex-col items-center p-6">
-            <div class="grid grid-flow-col text-center p-2">
-                <div class="shadow-sm flex-1 bg-violet-600 rounded-lg"><h2>MedChain</h2>
-                    <div className="w-full max-w-md bg-white p-6 rounded-lg shadow-md border space-y-2">
-                        <h2 className="text-2xl font-bold text-center text-purple-600 mb-4">
-                            Intermediary
-                        </h2>
-                        <h3 align="center" >Add Transaction</h3>
-                        <h3 align="left">Date of Transaction</h3>
-                        <input
-                            type="date"
-                            placeholder="DD/MM/YYYY"
-                            name="transactionDate"
-                            value={formData.transactionDate}
-                            onChange={handleChange}
-                            className="w-full p-2 border rounded-md space-y-2"
-                        />
-                        <h3 align="left">Quantity Sold</h3>
-                        <input
-                            type="number"
-                            placeholder="Quantity"
-                            name="quantity"
-                            value={formData.quantity}
-                            onCHange={handleChange}
-                            className="w-full p-2 border rounded-md space-y-2"
-                        />
-                        <h3 align="left">Details</h3>
-                        <input
-                            type="text"
-                            placeholder="Other details"
-                            name="details"
-                            value={formData.quantity}
-                            onChange={handleChange}
-                            className="w-full p-2 border rounded-md space-y-2"
-                        />
-                        <button className="w-full py-2 bg-purple-600 text-white rounded-md"
-                            onClick={handleUpload}
-                        >
-                            Add to Ledger
-                        </button>
-                        {/*</div>*/}
-                    </div>
-                </div>
-            </div>
-        </div>
-    )
+    {/* Card Container */}
+    <br></br>
+    <div className="w-full max-w-md p-6 bg-white border border-gray-200 mt-20 rounded-lg shadow-lg relative z-10">
+      <IntermediaryAdd />
+    </div>
+  </div>
+</div>
+  );
 };
 
 export default IntermediaryDashboard;

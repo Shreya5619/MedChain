@@ -9,7 +9,7 @@ from Blockchain.Backend.core.database.database import BlockchainDB
 blockchain=Blockchain()
 app = Flask(__name__)
 
-CORS(app, resources={r"/*": {"origins": "*"}})
+CORS(app, resources={r"/*": {"origins": "http://localhost:5173"}})
 
 
 @app.route("/")
@@ -20,37 +20,35 @@ def home():
 @app.route("/add", methods=["GET", "POST"])
 def add():
     if request.method == "POST":
+        print(1)
         # Extract details from the request body
         data = request.get_json()
         # Required fields to simulate a blockchain transaction
-        drug_name = data.get("drug_name")
-        batch = data.get("batch")
+        batch=data.get("batch")
+        drug_id = data.get("drug_id")
         sender = data.get("sender")
         receiver = data.get("receiver")
-        status = data.get("status")
-        location = data.get("location")
-        print(drug_name, batch, sender, receiver, status, location)
+        print(drug_id, batch, sender, receiver)
 
         # Validate that all fields are provided
-        if not all([drug_name, batch, sender, receiver, status, location]):
+        if not all([drug_id, batch, sender, receiver]):
             return jsonify({"message": "All fields are required"}), 400
-        
 
         # Try creating a new transaction object
         try:
             # Create the transaction object
             tx = Trans(
-                transaction_id=f"tx_{hash(drug_name + batch)}",  # Unique tx_id generation
-                drug_id=drug_name,
+                transaction_id=f"tx_{hash(drug_name + batch)}",
+                drug_id=drug_id,
                 batch_id=batch,
                 sender=sender,
                 receiver=receiver,
-                status=status,
-                location=location,
+                status="in-transit",
+                location="unknown",
             )
 
             # Add the transaction to the blockchain on successful creation
-            blockchain.main(sender,tx.transaction_id,drug_name,batch,receiver,status,location)
+            blockchain.main(sender,drug_id,batch,receiver,tx.status,tx.location)
             print("Transaction added to the blockchain")
 
             # Return a successful response with transaction details
@@ -62,7 +60,10 @@ def add():
 
 @app.route("/genId", methods=["GET", "POST"])
 def genId():
+    if request.method == "OPTIONS":
+        return '', 200
     if request.method == "POST":
+        print(1)
         # Extract details from the request body
         data = request.get_json()
         # Required fields to simulate a blockchain transaction
@@ -74,8 +75,8 @@ def genId():
         try:
             # Create the transaction object
             tx = Trans(
-                transaction_id=f"{blockchain.create_unique_drug_id(drug_name,"manufacturer",batch,manu_date,expDate)}",  # Unique tx_id generation
-                drug_id=drug_name,
+                transaction_id=f"tx_{hash(drug_name + batch)}",
+                drug_id=blockchain.create_unique_drug_id(drug_name,"manufacturer",batch,manu_date,expDate),
                 batch_id=batch,
                 sender="Manufactured",
                 receiver="Manufactured",
@@ -84,11 +85,11 @@ def genId():
             )
             print(tx)
             # Add the transaction to the blockchain on successful creation
-            blockchain.main(tx.sender,tx.transaction_id,drug_name,batch,tx.receiver,tx.status,tx.location)
+            blockchain.main(tx.sender,tx.drug_id,batch,tx.receiver,tx.status,tx.location)
             print("Drug created and added to blockchain successfully!")
 
             # Return a successful response with transaction details
-            return jsonify({"message": "Drug successfully created and added to blockchain", "drug_id": tx.transaction_id}), 200
+            return jsonify({"message": "Drug successfully created and added to blockchain", "drug_id": tx.drug_id}), 200
 
         except Exception as e:
             # Handle error if transaction creation fails

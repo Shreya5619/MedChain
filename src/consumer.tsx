@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom'; // For routing
 import QrReader from 'react-qr-scanner'; // Correct import for QR scanner
+import Consnav from './components/consnav';
+import DrugTransactionCard from './components/drugTransactionCard';
 
 // Sample drug details (this could come from an API or database)
 const drugDetails = {
@@ -42,39 +44,23 @@ const ConsumerPage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-r from-blue-500 to-purple-600 flex flex-col text-white">
       {/* Main Content */}
+      <Consnav/>
       <div className="flex-grow flex items-center justify-center">
-        <div className="absolute inset-0 bg-opacity-60 bg-black"></div>
 
-        <div className="relative z-10 w-full max-w-lg p-6 bg-white rounded-lg shadow-lg">
-          <h1 className="text-3xl font-bold text-center mb-8 text-cyan-700">Scan Drug QR Code</h1>
+      
+      <div className="flex-grow flex items-center justify-center">
+    
+    {/* Background Overlay */}
+    {/* <div className="absolute inset-0 bg-opacity-60 bg-black"></div> */}
 
-          {/* QR Scanner */}
-          <div>
-            <QrReader
-              delay={delay}
-              style={previewStyle}
-              onError={handleError}
-              onScan={handleScan}
-            />
-            <p className="text-center mt-4">{scanResult ? `Scanned Result: ${scanResult}` : 'Scan a QR code to get drug details'}</p>
-          </div>
-
-          {/* Display Drug Details */}
-          {/* {drug && (
-            <div className="mt-6 text-center">
-              <h2 className="text-2xl font-semibold mb-4 text-gray-900">{drug.name}</h2>
-              <p className="text-lg mb-4 text-gray-700"><strong>Manufacturer:</strong> {drug.manufacturer}</p>
-              <p className="text-lg mb-4 text-gray-700"><strong>Dosage:</strong> {drug.dosage}</p>
-              <p className="text-lg mb-4 text-gray-700"><strong>Expiration Date:</strong> {drug.expirationDate}</p>
-              <p className="text-md mb-6 text-gray-700">{drug.description}</p>
-
-              <Link to="/buy" className="text-white bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-full">
-                Buy Now
-              </Link>
-            </div>)} */}
-        </div>
-      </div>
+    {/* Card Container */}
+    <br></br>
+    <div className="w-full max-w-md p-6 bg-white border border-gray-200 mt-20 rounded-lg shadow-lg relative z-10">
+      <DrugTransactionCard/>
     </div>
+  </div>
+  </div>
+  </div>
   );
 };
 

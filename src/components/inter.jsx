@@ -4,26 +4,26 @@ import { SearchOutlined } from "@ant-design/icons";
 
 const { Meta } = Card;
 
-const DrugsByManufacturer = () => {
-  const [manufacturer, setManufacturer] = useState("");
+const DrugsByIntermediary = () => {
+  const [Intermediary, setIntermediary] = useState("");
   const [drugDetails, setDrugDetails] = useState([]);
   const [loading, setLoading] = useState(false);
 
   const handleSearch = async () => {
-    if (!manufacturer) {
-      message.error("Please enter a manufacturer name.");
+    if (!Intermediary) {
+      message.error("Please enter a Intermediary name.");
       return;
     }
 
     setLoading(true);
     try {
-      const response = await fetch(`http://localhost:5000/drugsByManufacturer?manufacturer=${manufacturer}`);
+      const response = await fetch(`http://localhost:5000/drugsByIntermediary?Intermediary=${Intermediary}`);
       const data = await response.json();
       console.log(data)
       if (data && data.length > 0) {
         setDrugDetails(data);
       } else {
-        message.info("No drugs found for this manufacturer.");
+        message.info("No drugs found for this Intermediary.");
         setDrugDetails([]);
       }
     } catch (error) {
@@ -37,12 +37,12 @@ const DrugsByManufacturer = () => {
   return (
     <div style={{ padding: "20px" }}>
 
-      <h2>Search Drugs by Manufacturer</h2>
+      <h2>Search Drugs by Intermediary</h2>
       <div className="flex justify-center" >
           <Input
-            placeholder="Enter Manufacturer Name"
-            value={manufacturer}
-            onChange={(e) => setManufacturer(e.target.value)}
+            placeholder="Enter Intermediary Name"
+            value={Intermediary}
+            onChange={(e) => setIntermediary(e.target.value)}
             style={{ width: "100%" }}
             className="space-y-2"
           />
@@ -98,7 +98,7 @@ const DrugsByManufacturer = () => {
             </Row>
           ) : (
             <p style={{ textAlign: "center", fontSize: "16px", color: "#888" }}>
-              No drug transactions found for this manufacturer.
+              No drug transactions found for this Intermediary.
             </p>
           )}
         </div>
@@ -107,4 +107,4 @@ const DrugsByManufacturer = () => {
   );
 };
 
-export default DrugsByManufacturer;
+export default DrugsByIntermediary;

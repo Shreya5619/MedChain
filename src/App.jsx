@@ -9,6 +9,8 @@ import MainPage from './mainpage';
 import ConsumerPage from './consumer';
 import ManuTrack from './manutrack';
 import ManuView from './manuView';
+import InterTrack from './inttrack';
+import IntSearch from './intersearch';
 {/*import homepageDashboard from './homepage.jsx';*/ }
 
 function App() {
@@ -22,6 +24,8 @@ function App() {
           <Route path='/manufacturer/track' element={<ManuTrack />} />
           <Route path='/manufacturer/view' element={<ManuView />} />
           <Route path='/intermediary' element={<IntermediaryDashboard />} /> 
+          <Route path='/intermediary/track' element={<IntSearch />} />
+          <Route path='/intermediary/view' element={<InterTrack/>} />
           <Route path='/hospital' element={<HospitalDashboard />} /> 
           <Route path='/consumer' element={<ConsumerPage />} /> 
         </Routes>

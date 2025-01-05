@@ -88,14 +88,15 @@ class Blockchain:
         return results
 
     def create_unique_drug_id(self, drug_name, manufacturer, batch, expiry_date, manu_date):
-        timestamp = int(time.time())
-        unique_data = f"{timestamp}{drug_name}{manufacturer}{batch}{expiry_date}{manu_date}"
+        unique_data = f"{drug_name}{manufacturer}{batch}{expiry_date}{manu_date}"
         unique_id = hash256(unique_data.encode()).hex()
         return unique_id
 
-    def main(self,person_from,trans_id,drug_id,batch_id,person_to,status,loc):
+    def main(self,person_from,drug_id,batch_id,person_to,status,loc):
         last_block = self.fetch_last_block()
-        
+        timestamp = int(time.time())
+        unique_data = f"{timestamp}{person_from}{drug_id}{batch_id}{person_to}{status}{loc}"
+        trans_id = hash256(unique_data.encode()).hex()
         if last_block is None:
             self.GenesisBlock()
             print("Genesis Block Created.")
