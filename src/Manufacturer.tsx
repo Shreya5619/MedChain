@@ -1,8 +1,17 @@
 import { useState } from "react";
 import ManuNav from "./components/manunav";
+import QRCode from "react-qr-code";
+import React from "react";
+
+interface drugs{
+    drugName: string;
+    batchNumber: string;
+    manufacturingDate: string;
+    expiryDate: string;
+}
 
 const ManufacturerDashboard = () => {
-  const [drugs, setDrugs] = useState([]);
+  const [drugs, setDrugs] = useState<drugs[]>([]);
   const [drugIds, setDrugIds] = useState({});
   const [formData, setFormData] = useState({
     drugName: "",
@@ -82,7 +91,7 @@ const ManufacturerDashboard = () => {
     <div className="bg-gradient-to-r from-blue-500 to-purple-600 relative min-h-screen">
       {/* Black overlay covering entire page */}
       <ManuNav/>
-      <div className="absolute inset-0 bg-black opacity-60 overflow-y-auto"></div>
+      {/* <div className="absolute inset-0 bg-black opacity-60 overflow-y-auto"></div> */}
 
       {/* Content area */}
       <div className="relative z-10 flex flex-col items-center">
@@ -166,6 +175,7 @@ const ManufacturerDashboard = () => {
                 {drugIds[drug.batchNumber] && (
                   <div className="mt-2 text-sm text-green-600">
                     <strong>Drug ID:</strong> {drugIds[drug.batchNumber]}
+                    <QRCode value={drugIds[drug.batchNumber]}></QRCode>
                   </div>
                 )}
               </div>

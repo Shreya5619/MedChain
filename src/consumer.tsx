@@ -27,7 +27,7 @@ const ConsumerPage = () => {
       setScanResult(data.text); // The text from the scanned QR code
       // Assuming the QR code contains an identifier that we can use to fetch drug details
       if (data.text === "12345") { // Mocking the data ID for example
-        setDrug(drugDetails);
+        
       } else {
         alert("Invalid QR Code.");
         setDrug(null);
@@ -60,7 +60,7 @@ const ConsumerPage = () => {
           </div>
 
           {/* Display Drug Details */}
-          {drug && (
+          {/* {drug && (
             <div className="mt-6 text-center">
               <h2 className="text-2xl font-semibold mb-4 text-gray-900">{drug.name}</h2>
               <p className="text-lg mb-4 text-gray-700"><strong>Manufacturer:</strong> {drug.manufacturer}</p>
@@ -71,8 +71,7 @@ const ConsumerPage = () => {
               <Link to="/buy" className="text-white bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-full">
                 Buy Now
               </Link>
-            </div>
-          )}
+            </div>)} */}
         </div>
       </div>
     </div>

@@ -63,7 +63,7 @@ class Blockchain:
         if not blockchain_data:
             print("Blockchain data is empty.")
             return results
-
+        print(drug_id)
         for block in blockchain_data:
             transaction_str = block.get("Txs", "")
             try:
@@ -71,8 +71,8 @@ class Blockchain:
             except json.JSONDecodeError:
                 print(f"Error decoding transaction in block {block['Height']}. Skipping this block.")
                 continue
-            
-            if transactions.get("drug_id") == drug_id:
+            if transactions.get("DrugID") == drug_id:
+                print(1)
                 results.append({
                     "BlockHeight": block["Height"],
                     "BlockHash": block["BlockHeader"]["blockHash"],
@@ -109,4 +109,3 @@ class Blockchain:
 
 if __name__ == "__main__":
     blockchain = Blockchain()
-    blockchain.main()

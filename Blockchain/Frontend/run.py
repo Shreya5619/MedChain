@@ -4,13 +4,18 @@ from flask_cors import CORS
 from flask import Flask, request, jsonify
 from Blockchain.Backend.core.Tx import Trans
 from Blockchain.Backend.core.blockchain import Blockchain  # Import the Blockchain class
-
+import json
+from Blockchain.Backend.core.database.database import BlockchainDB
+blockchain=Blockchain()
 app = Flask(__name__)
 
-CORS(app, supports_credentials=True, resources={r"/*": {"origins": "*"}})
+CORS(app, resources={r"/*": {"origins": "*"}})
 
-# Initialize blockchain instance
-blockchain = Blockchain()
+
+@app.route("/")
+def home():
+    return "Welcome to MedChain!"
+
 
 @app.route("/add", methods=["GET", "POST"])
 def add():
@@ -69,7 +74,7 @@ def genId():
         try:
             # Create the transaction object
             tx = Trans(
-                transaction_id=f"{abs(hash(drug_name + batch + manu_date + expDate))}",  # Unique tx_id generation
+                transaction_id=f"{blockchain.create_unique_drug_id(drug_name,"manufacturer",batch,manu_date,expDate)}",  # Unique tx_id generation
                 drug_id=drug_name,
                 batch_id=batch,
                 sender="Manufactured",
@@ -89,6 +94,52 @@ def genId():
             # Handle error if transaction creation fails
             print(e)
             return jsonify({"message": f"Drug creation failed: {str(e)}"}), 500
+
+
+@app.route("/drugsByManufacturer", methods=["GET"])
+def drugs_by_manufacturer():
+    manufacturer = request.args.get("manufacturer")
+    print(manufacturer)
+    if not manufacturer:
+        return jsonify({"message": "Manufacturer name is required"}), 400
+    db = BlockchainDB()
+    blockchain_data = db.read()
+    results = []
+    if not blockchain_data:
+        return jsonify({"message": "Blockchain data is empty"}), 404
+    for block in blockchain_data:
+        transaction_str = block.get("Txs", "")
+        try:
+            transactions = json.loads(transaction_str)
+        except json.JSONDecodeError:
+            continue
+        if transactions.get("Sender") == manufacturer:
+            results.append({
+                "BlockHeight": block["Height"],
+                "BlockHash": block["BlockHeader"]["blockHash"],
+                "Timestamp": block["BlockHeader"]["timestamp"],
+                "TransactionDetails": transactions
+            })
+    if not results:
+        return jsonify({"message": f"No drugs found for manufacturer {manufacturer}"}), 404
+    return jsonify(results), 200
+
+@app.route("/searchDrug", methods=["GET"])
+def search_drug():
+    drug_id = request.args.get("drug_id")
+    if not drug_id:
+        return jsonify({"error": "Drug ID is required"}), 400
+
+    try:
+        # Search for the drug in the blockchain
+        results = blockchain.search_drug(drug_id)
+        print("results",results)
+        if results:
+            return jsonify(results), 200
+        else:
+            return jsonify({"message": "No transactions found for the given Drug ID"}), 404
+    except Exception as e:
+        return jsonify({"error": f"An error occurred: {str(e)}"}), 500
 
 def main():
     # Start the Flask application
