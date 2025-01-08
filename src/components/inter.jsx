@@ -17,7 +17,8 @@ const DrugsByIntermediary = () => {
 
     setLoading(true);
     try {
-      const response = await fetch(`http://localhost:5000/drugsByIntermediary?Intermediary=${Intermediary}`);
+      console.log(Intermediary)
+      const response = await fetch(`http://localhost:5000/drugsByManufacturer?manufacturer=${Intermediary}`);
       const data = await response.json();
       console.log(data)
       if (data && data.length > 0) {

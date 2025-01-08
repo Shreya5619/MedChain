@@ -11,6 +11,11 @@ import ManuTrack from './manutrack';
 import ManuView from './manuView';
 import InterTrack from './inttrack';
 import IntSearch from './intersearch';
+import Login from './login.jsx';
+import ManuLogin from './manulogin';
+import InterLogin from './interlogin';
+import ManuSearch from './manutrack';
+import HospLog from './hosplogin';
 {/*import homepageDashboard from './homepage.jsx';*/ }
 
 function App() {
@@ -20,9 +25,15 @@ function App() {
         <Routes>
         <Route path='/' element={<MainPage/>} />
         <Route path='/signin' element={<MedChain />} />
+        <Route path='/login' element={<Login />} />
+        <Route path='/login/manufacturer' element={<ManuLogin />} />
+        
+        <Route path='/login/intermediary' element={<InterLogin />} />
+        
+        <Route path='/login/hospital' element={<HospLog />} />
           <Route path='/manufacturer' element={<ManufacturerDashboard />} />
           <Route path='/manufacturer/track' element={<ManuTrack />} />
-          <Route path='/manufacturer/view' element={<ManuView />} />
+          <Route path='/manufacturer/view' element={<ManuSearch />} />
           <Route path='/intermediary' element={<IntermediaryDashboard />} /> 
           <Route path='/intermediary/track' element={<IntSearch />} />
           <Route path='/intermediary/view' element={<InterTrack/>} />

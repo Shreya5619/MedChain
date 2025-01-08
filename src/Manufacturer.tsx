@@ -42,8 +42,9 @@ const ManufacturerDashboard = () => {
         }),
       });
       const result = await response.json();
+      console.log(result.drug_id[0])
       if (response.ok) {
-        formData.drugId=(result.drug_id)
+        formData.drugId=(result.drug_id[0])
         setDrugs([...drugs, formData]);
         setFormData({
           drugId:"",
