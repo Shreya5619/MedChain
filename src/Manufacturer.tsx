@@ -3,19 +3,19 @@ import ManuNav from "./components/manunav";
 import QRCode from "react-qr-code";
 import React from "react";
 
-interface drugs{
-    drugId: string;
-    drugName: string;
-    batchNumber: string;
-    manufacturingDate: string;
-    expiryDate: string;
+interface drugs {
+  drugId: string;
+  drugName: string;
+  batchNumber: string;
+  manufacturingDate: string;
+  expiryDate: string;
 }
 
 const ManufacturerDashboard = () => {
   const [drugs, setDrugs] = useState<drugs[]>([]);
   const [drugIds, setDrugIds] = useState({});
   const [formData, setFormData] = useState({
-    drugId:"",
+    drugId: "",
     drugName: "",
     batchNumber: "",
     manufacturingDate: "",
@@ -44,10 +44,10 @@ const ManufacturerDashboard = () => {
       const result = await response.json();
       console.log(result.drug_id[0])
       if (response.ok) {
-        formData.drugId=(result.drug_id[0])
+        formData.drugId = (result.drug_id[0])
         setDrugs([...drugs, formData]);
         setFormData({
-          drugId:"",
+          drugId: "",
           drugName: "",
           batchNumber: "",
           manufacturingDate: "",
@@ -57,7 +57,7 @@ const ManufacturerDashboard = () => {
           ...drugIds,
           [drugs[drugs.length].batchNumber]: result.drug_id,
         });
-        alert(`Drug ID generated for batch ${drugs[drugs.length-1].batchNumber}: ${result.drug_id}`);
+        alert(`Drug ID generated for batch ${drugs[drugs.length - 1].batchNumber}: ${result.drug_id}`);
       } else {
         alert("Failed to generate Drug ID");
       }
@@ -66,17 +66,17 @@ const ManufacturerDashboard = () => {
     }
   };
 
-  const handleGenerateId =(drug) => {
-        setDrugIds({
-          ...drugIds,
-          [drug.batchNumber]: drug.drug_id,
-        });
-}
+  const handleGenerateId = (drug) => {
+    setDrugIds({
+      ...drugIds,
+      [drug.batchNumber]: drug.drug_id,
+    });
+  }
 
   return (
     <div className="bg-gradient-to-r from-blue-500 to-purple-600 relative min-h-screen">
       {/* Black overlay covering entire page */}
-      <ManuNav/>
+      <ManuNav />
       {/* <div className="absolute inset-0 bg-black opacity-60 overflow-y-auto"></div> */}
 
       {/* Content area */}
@@ -148,10 +148,10 @@ const ManufacturerDashboard = () => {
           ) : (
             drugs.map((drug, index) => (
               <div key={index} className="border-t pt-4 mt-4">
-                
+
                 <p className="text-gray-700" style={{ wordBreak: "break-word" }}>
-  <strong>Drug Id:</strong> {drug.drugId}
-</p>
+                  <strong>Drug Id:</strong> {drug.drugId}
+                </p>
                 <p className="text-gray-700"><strong>Drug Name:</strong> {drug.drugName}</p>
                 <p className="text-gray-700"><strong>Batch Number:</strong> {drug.batchNumber}</p>
                 <p className="text-gray-700"><strong>Manufacturing Date:</strong> {drug.manufacturingDate}</p>
