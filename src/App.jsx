@@ -16,29 +16,34 @@ import ManuLogin from './manulogin';
 import InterLogin from './interlogin';
 import ManuSearch from './manutrack';
 import HospLog from './hosplogin';
+import AboutUs from './aboutus';
 {/*import homepageDashboard from './homepage.jsx';*/ }
+
+
+
 
 function App() {
   return (
     <div className="h-full">
       <BrowserRouter>
         <Routes>
-        <Route path='/' element={<MainPage/>} />
-        <Route path='/signin' element={<MedChain />} />
-        <Route path='/login' element={<Login />} />
-        <Route path='/login/manufacturer' element={<ManuLogin />} />
-        
-        <Route path='/login/intermediary' element={<InterLogin />} />
-        
-        <Route path='/login/hospital' element={<HospLog />} />
+          <Route path='/' element={<MainPage />} />
+          <Route path='/signin' element={<MedChain />} />
+          <Route path='/aboutus' element={<AboutUs />} />
+          <Route path='/login' element={<Login />} />
+          <Route path='/login/manufacturer' element={<ManuLogin />} />
+
+          <Route path='/login/intermediary' element={<InterLogin />} />
+
+          <Route path='/login/hospital' element={<HospLog />} />
           <Route path='/manufacturer' element={<ManufacturerDashboard />} />
           <Route path='/manufacturer/track' element={<ManuTrack />} />
           <Route path='/manufacturer/view' element={<ManuSearch />} />
-          <Route path='/intermediary' element={<IntermediaryDashboard />} /> 
+          <Route path='/intermediary' element={<IntermediaryDashboard />} />
           <Route path='/intermediary/track' element={<IntSearch />} />
-          <Route path='/intermediary/view' element={<InterTrack/>} />
-          <Route path='/hospital' element={<HospitalDashboard />} /> 
-          <Route path='/consumer' element={<ConsumerPage />} /> 
+          <Route path='/intermediary/view' element={<InterTrack />} />
+          <Route path='/hospital' element={<HospitalDashboard />} />
+          <Route path='/consumer' element={<ConsumerPage />} />
         </Routes>
       </BrowserRouter>
     </div>

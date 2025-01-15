@@ -27,7 +27,7 @@ const Navbar = () => {
               </a>
             </li>
             <li>
-              <a href="/" className="hover:text-blue-400">
+              <a href="/aboutus" className="hover:text-blue-400">
                 About
               </a>
             </li>
@@ -58,9 +58,8 @@ const Navbar = () => {
 
         {/* Mobile Menu */}
         <div
-          className={`${
-            isMenuOpen ? "block" : "hidden"
-          } md:hidden mt-4 bg-gray-700 p-4 space-y-4 rounded-lg`}
+          className={`${isMenuOpen ? "block" : "hidden"
+            } md:hidden mt-4 bg-gray-700 p-4 space-y-4 rounded-lg`}
         >
           <ul>
             <li>

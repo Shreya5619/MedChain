@@ -883,5 +883,50 @@
         },
         "Txcount": 1,
         "Txs": "{\"TransactionID\": \"61cb7b8c6f9b9c928ff00ed10229616a13471b4638da92a94ac0d9a39081d163\", \"DrugID\": \"b03d9d5a78dde87628d0f50f9285b07c0ff6c0b039541fed497a54c2bbf91fd7\", \"BatchID\": \"Batch1\", \"Sender\": \"manufacturer\", \"Receiver\": \"Manufactured\", \"Status\": [\"Manufactured\"], \"Location\": [\"unknown\"], \"Timestamp\": 1736143668}"
+    },
+    {
+        "Height": 58,
+        "Blocksize": 1,
+        "BlockHeader": {
+            "version": 1,
+            "prevBlockHash": "0000903a01bface249464696f450996ee2f4de0f78b46fd9d5bb217eabbdb79c",
+            "merkleRoot": "e000ead211b0402732ffa42b10d2c8b40ca7a3ea1a7e06e8a7604cba29ba730c",
+            "timestamp": 1736836820,
+            "bits": "ffff001f",
+            "nonce": 108121,
+            "blockHash": "0000fd1ebd23b2167e2c4b38bc5806115724f9b9cd317b6a8f654714478ca68c"
+        },
+        "Txcount": 1,
+        "Txs": "{\"TransactionID\": \"bf5223377d7f12fbe9126710027ec8b635466b2d318f0ca38127c4f032765952\", \"DrugID\": \"eb5bf7f0030444582af276f4949e4f8d05136d81c32daa4aedceb1bfd20d3c77\", \"BatchID\": \"1234\", \"Sender\": \"manufacturer\", \"Receiver\": \"Manufactured\", \"Status\": [\"Manufactured\"], \"Location\": [\"unknown\"], \"Timestamp\": 1736836820}"
+    },
+    {
+        "Height": 58,
+        "Blocksize": 1,
+        "BlockHeader": {
+            "version": 1,
+            "prevBlockHash": "0000903a01bface249464696f450996ee2f4de0f78b46fd9d5bb217eabbdb79c",
+            "merkleRoot": "e000ead211b0402732ffa42b10d2c8b40ca7a3ea1a7e06e8a7604cba29ba730c",
+            "timestamp": 1736836820,
+            "bits": "ffff001f",
+            "nonce": 108121,
+            "blockHash": "0000fd1ebd23b2167e2c4b38bc5806115724f9b9cd317b6a8f654714478ca68c"
+        },
+        "Txcount": 1,
+        "Txs": "{\"TransactionID\": \"bf5223377d7f12fbe9126710027ec8b635466b2d318f0ca38127c4f032765952\", \"DrugID\": \"eb5bf7f0030444582af276f4949e4f8d05136d81c32daa4aedceb1bfd20d3c77\", \"BatchID\": \"1234\", \"Sender\": \"manufacturer\", \"Receiver\": \"Manufactured\", \"Status\": [\"Manufactured\"], \"Location\": [\"unknown\"], \"Timestamp\": 1736836820}"
+    },
+    {
+        "Height": 59,
+        "Blocksize": 1,
+        "BlockHeader": {
+            "version": 1,
+            "prevBlockHash": "0000fd1ebd23b2167e2c4b38bc5806115724f9b9cd317b6a8f654714478ca68c",
+            "merkleRoot": "cde4cbe692f2b95a20c521c39beea360fc79021fc812194879e5a232573930ba",
+            "timestamp": 1736848824,
+            "bits": "ffff001f",
+            "nonce": 40794,
+            "blockHash": "00005503c3febe36961e2c54d054aa4a3790da693920233ca71af45655df4018"
+        },
+        "Txcount": 1,
+        "Txs": "{\"TransactionID\": \"63e34238696bf369d7eb04f3d5fb955e3b1145900c2a86632a3847c145d77f1a\", \"DrugID\": \"324895a5f3f24694cc675bb3bf22c52ee82e656bbdd320d563e51e85e7749e33\", \"BatchID\": \"12345\", \"Sender\": \"manufacturer\", \"Receiver\": \"Manufactured\", \"Status\": [\"Manufactured\"], \"Location\": [\"unknown\"], \"Timestamp\": 1736848824}"
     }
 ]

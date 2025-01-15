@@ -40,28 +40,28 @@ const DrugsByIntermediary = () => {
 
       <h2>Search Drugs by Intermediary</h2>
       <div className="flex justify-center" >
-          <Input
-            placeholder="Enter Intermediary Name"
-            value={Intermediary}
-            onChange={(e) => setIntermediary(e.target.value)}
-            style={{ width: "100%" }}
-            className="space-y-2"
-          />
-          <Button
-            type="primary"
-            icon={<SearchOutlined />}
-            onClick={handleSearch}
-            loading={loading}
-            style={{ height: "40px", marginLeft: "10px" }}
-          >
-            Search
-          </Button>
+        <Input
+          placeholder="Enter Intermediary Name"
+          value={Intermediary}
+          onChange={(e) => setIntermediary(e.target.value)}
+          style={{ width: "100%" }}
+          className="space-y-2"
+        />
+        <Button
+          type="primary"
+          icon={<SearchOutlined />}
+          onClick={handleSearch}
+          loading={loading}
+          style={{ height: "40px", marginLeft: "10px" }}
+        >
+          Search
+        </Button>
       </div>
 
       {loading ? (
         <Spin size="large" style={{ display: "block", marginTop: "20px", textAlign: "center" }} />
       ) : (
-        
+
         <div style={{ marginTop: "20px" }}>
           {drugDetails.length > 0 ? (
             <Row gutter={[16, 16]} justify="center">

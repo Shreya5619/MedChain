@@ -1,5 +1,5 @@
 import sys
-sys.path.append('C:\\Users\\Shreya Prasad\\Desktop\\MedChain')
+sys.path.append('C:\\Users\\Lenovo\\RVCE Projects\\MedChain-1')
 from flask_cors import CORS
 from flask import Flask, request, jsonify
 from Blockchain.Backend.core.Tx import Trans

@@ -43,7 +43,7 @@ const ManuNav = () => {
             </li>
             <li>
               <a href="/signin" className="hover:text-blue-400">
-                <LogOut/>
+                <LogOut />
               </a>
             </li>
           </ul>
@@ -58,9 +58,8 @@ const ManuNav = () => {
 
         {/* Mobile Menu */}
         <div
-          className={`${
-            isMenuOpen ? "block" : "hidden"
-          } md:hidden mt-4 bg-gray-700 p-4 space-y-4 rounded-lg`}
+          className={`${isMenuOpen ? "block" : "hidden"
+            } md:hidden mt-4 bg-gray-700 p-4 space-y-4 rounded-lg`}
         >
           <ul>
             <li>
@@ -85,7 +84,7 @@ const ManuNav = () => {
             </li>
             <li>
               <a href="#partners" className="block py-2 px-4 hover:bg-gray-600 text-white">
-            Logout
+                Logout
               </a>
             </li>
           </ul>
