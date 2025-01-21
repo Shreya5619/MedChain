@@ -59,11 +59,9 @@ class Blockchain:
         db = BlockchainDB()
         blockchain_data = db.read()  # Fetch all blockchain data.
         results = []
-
         if not blockchain_data:
             print("Blockchain data is empty.")
             return results
-        print(drug_id)
         for block in blockchain_data:
             transaction_str = block.get("Txs", "")
             try:

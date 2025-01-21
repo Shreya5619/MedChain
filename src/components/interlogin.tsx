@@ -27,6 +27,7 @@ const InterCard: React.FC = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     console.log('Form Data Submitted: ', formData);
+    localStorage.setItem("intermediary","intermediaryA")
     // Handle form submission (e.g., send data to the server)
   };
 

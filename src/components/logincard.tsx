@@ -15,7 +15,7 @@ const LoginCard = () => {
       <ul className="space-y-2">
         <li>
           <a
-            href="login/manufacturer"
+            href="signup/manufacturer"
             className="flex items-center p-3 text-base font-bold text-white rounded-lg bg-gradient-to-r from-blue-600 to-teal-600 hover:from-teal-600 hover:to-blue-600 hover:shadow-lg transition-all transform group"
           >
             <img
@@ -23,12 +23,12 @@ const LoginCard = () => {
               src="/manufacturericon.png"
               alt="Manufacturer Icon"
             />
-            <span className="ml-4 flex-1 font-encode">Login as Manufacturer</span>
+            <span className="ml-4 flex-1 font-encode">Signup as Manufacturer</span>
           </a>
         </li>
         <li>
           <a
-            href="login/intermediary"
+            href="signup/intermediary"
             className="flex items-center p-3 text-base font-bold text-white rounded-lg bg-gradient-to-r from-green-600 to-blue-500 hover:from-blue-500 hover:to-green-600 hover:shadow-lg transition-all transform group"
           >
             <img
@@ -36,12 +36,12 @@ const LoginCard = () => {
               src="/intericon.png"
               alt="Intermediary Icon"
             />
-            <span className="ml-4 flex-1 font-encode">Login as Intermediary</span>
+            <span className="ml-4 flex-1 font-encode">Signup as Intermediary</span>
           </a>
         </li>
         <li>
           <a
-            href="login"
+            href="signup/consumer"
             className="flex items-center p-3 text-base font-bold text-white rounded-lg bg-gradient-to-r from-cyan-500 to-teal-400 hover:from-teal-400 hover:to-cyan-500 hover:shadow-lg transition-all transform group"
           >
             <img
@@ -49,12 +49,12 @@ const LoginCard = () => {
               src="/personicon.png"
               alt="Consumer Icon"
             />
-            <span className="ml-4 flex-1 font-encode">Login as Consumer</span>
+            <span className="ml-4 flex-1 font-encode">Signup as Consumer</span>
           </a>
         </li>
         <li>
           <a
-            href="login/hospital"
+            href="signup/hospital"
             className="flex items-center p-3 text-base font-bold text-white rounded-lg bg-gradient-to-r from-purple-600 to-blue-500 hover:from-blue-500 hover:to-purple-600 hover:shadow-lg transition-all transform group"
           >
             <img
@@ -62,7 +62,7 @@ const LoginCard = () => {
               src="/hospitalicon.png"
               alt="Hospital Icon"
             />
-            <span className="ml-4 flex-1 font-encode">Login as Hospital</span>
+            <span className="ml-4 flex-1 font-encode">Signup as Hospital</span>
           </a>
         </li>
       </ul>

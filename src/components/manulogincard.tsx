@@ -6,10 +6,12 @@ interface LicenseFormData {
   gmpCertification: string;
   importExportLicense: string;
   batchRegistration: string;
+  email: string;
 }
 
 const ManuCard: React.FC = () => {
   const [formData, setFormData] = useState<LicenseFormData>({
+    email: '',
     manufacturerLicense: '',
     facilityLicense: '',
     gmpCertification: '',
@@ -27,6 +29,7 @@ const ManuCard: React.FC = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     console.log('Form Data Submitted: ', formData);
+    localStorage.setItem("manufacturer","ManufacterA")
     // Handle form submission (e.g., send data to the server)
   };
 
@@ -40,7 +43,20 @@ const ManuCard: React.FC = () => {
         <h2 className="text-center text-2xl font-bold text-gray-800 dark:text-white mb-4">Manufacturer License Form</h2>
 
         <form onSubmit={handleSubmit}>
-          <div className="mb-4">
+        <div className="mb-4 text-black">
+            <label htmlFor="EmailId" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Email ID</label>
+            <input 
+              type="text" 
+              placeholder="Enter your Email Id" 
+              name="email"
+              id="email"
+              required 
+              value={formData.email}
+              onChange={handleChange}
+              className="mt-1 block w-full p-2.5 border border-gray-300 rounded-lg shadow-sm focus:ring-primary focus:border-primary dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-primary dark:focus:border-primary"
+            />
+          </div>
+          <div className="mb-4 text-black">
             <label htmlFor="manufacturerLicense" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Manufacturer License</label>
             <input 
               type="text" 
@@ -54,7 +70,7 @@ const ManuCard: React.FC = () => {
             />
           </div>
 
-          <div className="mb-4">
+          <div className="mb-4 text-black">
             <label htmlFor="facilityLicense" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Drug Manufacturing Facility License</label>
             <input 
               type="text" 
@@ -68,7 +84,7 @@ const ManuCard: React.FC = () => {
             />
           </div>
 
-          <div className="mb-4">
+          <div className="mb-4 text-black">
             <label htmlFor="gmpCertification" className="block text-sm font-medium text-gray-700 dark:text-gray-300">GMP Certification</label>
             <input 
               type="text" 
@@ -82,7 +98,7 @@ const ManuCard: React.FC = () => {
             />
           </div>
 
-          <div className="mb-4">
+          <div className="mb-4 text-black">
             <label htmlFor="importExportLicense" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Drug Import/Export License (if applicable)</label>
             <input 
               type="text" 
@@ -95,7 +111,7 @@ const ManuCard: React.FC = () => {
             />
           </div>
 
-          <div className="mb-4">
+          <div className="mb-4 text-black">
             <label htmlFor="batchRegistration" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Batch/Drug Registration Number</label>
             <input 
               type="text" 

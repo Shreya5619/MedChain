@@ -1,5 +1,5 @@
 import sys
-sys.path.append('C:\\Users\\Lenovo\\RVCE Projects\\MedChain-1')
+sys.path.append('C:\\Users\\Shreya Prasad\\Desktop\\MedChain')
 from flask_cors import CORS
 from flask import Flask, request, jsonify
 from Blockchain.Backend.core.Tx import Trans
@@ -111,6 +111,7 @@ def drugs_by_manufacturer():
 
 @app.route("/searchDrug", methods=["GET"])
 def search_drug():
+    print(1)
     drug_id = request.args.get("drug_id")
     print(drug_id)
     if not drug_id:

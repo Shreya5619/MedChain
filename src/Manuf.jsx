@@ -1,18 +1,10 @@
 import { useState } from "react";
+import IntermediaryAdd from "./components/intermediaryadd";
+import IntNav from "./components/intnav";
 import ManuNav from "./components/manunav";
-import QRCode from "react-qr-code";
-import React from "react";
 
-interface drugs {
-  drugId: string;
-  drugName: string;
-  batchNumber: string;
-  manufacturingDate: string;
-  expiryDate: string;
-}
-
-const ManufacturerDashboard = () => {
-  const [drugs, setDrugs] = useState<drugs[]>([]);
+const Manuf = () => {
+  const [drugs, setDrugs] = useState([]);
   const [drugIds, setDrugIds] = useState({});
   const [formData, setFormData] = useState({
     drugId: "",
@@ -72,15 +64,12 @@ const ManufacturerDashboard = () => {
       [drug.batchNumber]: drug.drug_id,
     });
   }
-
   return (
-    <div className="bg-gradient-to-r from-blue-500 to-purple-600 relative min-h-screen">
-      {/* Black overlay covering entire page */}
-      <ManuNav />
-      {/* <div className="absolute inset-0 bg-black opacity-60 overflow-y-auto"></div> */}
+    <div className="bg-gradient-to-r from-blue-500 to-purple-600 min-h-screen flex flex-col text-white">
+<ManuNav/>
 
-      {/* Content area */}
-      <div className="relative z-10 flex flex-col items-center">
+  {/* Main Content */}
+  <div className="flex-grow flex items-center justify-center">
         {/* Form Card */}
         <div className="w-full mt-24 max-w-md p-6 bg-white rounded-lg shadow-lg">
           <h2 className="text-2xl font-bold text-center text-purple-600 mb-6">
@@ -162,8 +151,8 @@ const ManufacturerDashboard = () => {
           )}
         </div>
       </div>
-    </div>
+</div>
   );
 };
 
-export default ManufacturerDashboard;
+export default Manuf;

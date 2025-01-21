@@ -77,12 +77,12 @@ const DrugsByManufacturer = () => {
                     <div style={{ marginTop: "10px" }}>
                       <strong>Timestamp:</strong> {new Date(drug.Timestamp * 1000).toLocaleString()}
                     </div>
-                    <div>
-                      <strong>Transaction ID:</strong> {drug.TransactionDetails.TransactionID}
-                    </div>
-                    <div>
-                      <strong>Drug ID:</strong> {drug.TransactionDetails.DrugID}
-                    </div>
+                        <Card style={{ marginTop: '20px', color: 'black', wordWrap: 'break-word' }}>
+                          Transaction ID: {drug.TransactionDetails.TransactionID}
+                        </Card>
+                        <Card style={{ marginTop: '20px', color: 'black', wordWrap: 'break-word' }}>
+                          Drug ID: {drug.TransactionDetails.DrugID}
+                        </Card>
                     <div>
                       <strong>Batch ID:</strong> {drug.TransactionDetails.BatchID}
                     </div>

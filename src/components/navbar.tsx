@@ -37,8 +37,8 @@ const Navbar = () => {
               </a>
             </li>
             <li>
-              <Link to="/login" className="hover:text-blue-400">
-                Login
+              <Link to="/signup" className="hover:text-blue-400">
+                Signup
               </Link>
             </li>
             <li>
@@ -79,7 +79,7 @@ const Navbar = () => {
             </li>
             <li>
               <a href="#platform" className="block py-2 px-4 hover:bg-gray-600 text-white">
-                Login
+                Signup
               </a>
             </li>
             <li>

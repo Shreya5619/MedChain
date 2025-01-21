@@ -10,7 +10,7 @@ const ManuNav = () => {
   };
 
   return (
-    <div className="absolute w-full flex justify-center mt-4 z-10">
+    <div className="absolute w-full flex justify-center mt-4 z-100">
       <nav className="bg-gray-800 p-4 shadow-lg w-[70%] h-15 rounded-full text-white font-bold">
         <div className="flex items-center justify-between">
           {/* Logo */}

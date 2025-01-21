@@ -42,7 +42,7 @@ const DrugTransactionCard: React.FC = () => {
   const handleScan = (data: any) => {
     if (data?.text) { // Check if `text` exists in the scanned data
       console.log("QR Scanner Output:", data.text);
-      setQrResult(data.text.trim()); // Extract and trim the text
+      setQrResult(data.text.trim()); // Use the text for fetching data
       fetchDrugData(data.text.trim()); // Use the text for fetching data
     }
   };
@@ -53,6 +53,7 @@ const DrugTransactionCard: React.FC = () => {
   };
 
   const handleSearch = () => {
+    console.log("Searching for drug:", drugName); 
     fetchDrugData(drugName);
   };
 
@@ -78,7 +79,9 @@ const DrugTransactionCard: React.FC = () => {
         onScan={(data) => handleScan(data || "")}
         style={{ width: "100%" }}
       />;
-      <p>Scanned QR Code: {qrResult}</p>
+      <Card style={{ marginTop: '20px', color: 'black', wordWrap: 'break-word' }}>
+        <p>Scanned QR Code: {qrResult}</p>
+      </Card>
 
       {blockchainData.length > 0 && (
         <List

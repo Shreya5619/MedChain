@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import './App.css';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import ManufacturerDashboard from './Manufacturer';
+import ManufacturerDashboard from './Manufacturer.jsx';
 import IntermediaryDashboard from './Intermediary.jsx';
 import HospitalDashboard from './Hospitals.jsx';
 import MedChain from './home.jsx';
@@ -30,15 +30,15 @@ function App() {
           <Route path='/' element={<MainPage />} />
           <Route path='/signin' element={<MedChain />} />
           <Route path='/aboutus' element={<AboutUs />} />
-          <Route path='/login' element={<Login />} />
-          <Route path='/login/manufacturer' element={<ManuLogin />} />
+          <Route path='/signup' element={<Login />} />
+          <Route path='/signup/manufacturer' element={<ManuLogin />} />
 
-          <Route path='/login/intermediary' element={<InterLogin />} />
+          <Route path='/signup/intermediary' element={<InterLogin />} />
 
-          <Route path='/login/hospital' element={<HospLog />} />
+          <Route path='/signup/hospital' element={<HospLog />} />
           <Route path='/manufacturer' element={<ManufacturerDashboard />} />
           <Route path='/manufacturer/track' element={<ManuTrack />} />
-          <Route path='/manufacturer/view' element={<ManuSearch />} />
+          <Route path='/manufacturer/view' element={<ManuView />} />
           <Route path='/intermediary' element={<IntermediaryDashboard />} />
           <Route path='/intermediary/track' element={<IntSearch />} />
           <Route path='/intermediary/view' element={<InterTrack />} />
