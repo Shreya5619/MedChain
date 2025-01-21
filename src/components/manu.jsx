@@ -35,9 +35,9 @@ const DrugsByManufacturer = () => {
   };
 
   return (
-    <div style={{ padding: "20px" }}>
+    <div className="space-y-4" style={{ padding: "20px", color: "black" }}>
 
-      <h2>Search Drugs by Manufacturer</h2>
+      <h2>Enter the public key of the manufacturer</h2>
       <div className="flex justify-center" >
           <Input
             placeholder="Enter Manufacturer Name"

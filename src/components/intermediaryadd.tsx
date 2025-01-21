@@ -17,6 +17,7 @@ const IntermediaryAdd = () => {
 
   const handleUpload = async () => {
     try {
+     const  sender=localStorage.getItem('publicKeyInt');
       const response = await fetch("http://localhost:5000/add", {
         method: "POST",
         headers: {
@@ -25,7 +26,7 @@ const IntermediaryAdd = () => {
         body: JSON.stringify({
           drug_id: formData.drugId,
           batch: formData.batch,
-          sender: formData.sender,
+          sender: sender,
           receiver: formData.receiver
         }),
       });
@@ -73,18 +74,6 @@ const IntermediaryAdd = () => {
           placeholder="batch"
           name="batch"
           value={formData.batch}
-          onChange={handleChange}
-          className="w-full p-2 border rounded-md text-black"
-        />
-      </div>
-
-      <div>
-        <label className="font-bold text-black">Sender</label>
-        <input
-          type="text"
-          placeholder="sender"
-          name="sender"
-          value={formData.sender}
           onChange={handleChange}
           className="w-full p-2 border rounded-md text-black"
         />

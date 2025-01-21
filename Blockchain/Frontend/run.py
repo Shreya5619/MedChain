@@ -59,10 +59,11 @@ def genId():
         batch = data.get("batch")
         manu_date = data.get("manu_date")
         expDate = data.get("exp_date")
+        manufacturer = data.get("manufacturer")
 
         try:
-            
-            sender="manufacturer"
+            print("manufacturer",manufacturer)
+            sender=manufacturer
             receiver="Manufactured"
             drug_id=blockchain.create_unique_drug_id(drug_name,"manufacturer",batch,manu_date,expDate),
             status="Manufactured",
