@@ -6,6 +6,7 @@ from Blockchain.Backend.core.Tx import Trans
 from Blockchain.Backend.core.blockchain import Blockchain  # Import the Blockchain class
 import json
 from Blockchain.Backend.core.database.database import BlockchainDB
+from Blockchain.client.account import DrugAccount
 blockchain=Blockchain()
 app = Flask(__name__)
 
@@ -16,6 +17,15 @@ CORS(app, resources={r"/*": {"origins": "http://localhost:5173"}})
 def home():
     return "Welcome to MedChain!"
 
+
+@app.route("/createAccount", methods=["GET"])
+def create_account():
+    account = DrugAccount()
+    account.createKeys()
+    return jsonify({
+        "privateKey": str(account.privateKey),  # Convert private key to string
+        "publicAddress": account.publicAddress
+    }), 200
 
 @app.route("/add", methods=["GET", "POST"])
 def add():

@@ -104,11 +104,3 @@ if __name__ == "__main__":
     drug_account = DrugAccount()
     drug_account.createKeys()
 
-    # Record a transaction (e.g., drug shipment)
-    drug_account.recordTransaction(transaction_id="txn123", drug_id="drug456", batch_id="batch789", status="shipped", location="warehouse")
-
-    # Print transaction history
-    print(f"Transaction History: {drug_account.getTransactionHistory()}")
-
-    # Save account details to the database
-    drug_account.saveAccount()

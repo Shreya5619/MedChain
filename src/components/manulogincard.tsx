@@ -26,10 +26,25 @@ const ManuCard: React.FC = () => {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Form Data Submitted: ', formData);
-    localStorage.setItem("manufacturer","ManufacterA")
+    try {
+      const response = await fetch("http://localhost:5000/createAccount", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        console.log(data)
+        alert(`Your account has been created successfully\n Private Key : ${data.privateKey}\n Public Key : ${data.publicAddress}`);
+      } else {
+        alert("Failed to add transaction");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
     // Handle form submission (e.g., send data to the server)
   };
 
@@ -127,6 +142,7 @@ const ManuCard: React.FC = () => {
 
           <button 
             type="submit" 
+            onClick={handleSubmit}
             className="w-full bg-purple-600 hover:bg-primaryHover text-white font-bold py-2 px-4 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50"
           >
             Submit License Information
