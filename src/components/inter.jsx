@@ -36,7 +36,7 @@ const DrugsByIntermediary = () => {
   };
 
   return (
-    <div style={{ padding: "20px" }}>
+    <div style={{ padding: "20px" ,color:"black"}}>
 
       <h2>Search Drugs by Intermediary</h2>
       <div className="flex justify-center" >

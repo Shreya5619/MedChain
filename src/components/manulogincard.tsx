@@ -38,6 +38,8 @@ const ManuCard: React.FC = () => {
       if (response.ok) {
         const data = await response.json();
         console.log(data)
+        localStorage.setItem("privateKey", data.privateKey);
+    localStorage.setItem("publicKey", data.publicAddress);
         alert(`Your account has been created successfully\n Private Key : ${data.privateKey}\n Public Key : ${data.publicAddress}`);
       } else {
         alert("Failed to add transaction");
