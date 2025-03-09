@@ -22,8 +22,17 @@
 4. **Consumers** scan a QR code to verify drug legitimacy using blockchain records.
 
 ## 📸 Screenshots  
-### Dashboard  
+### User Inteface
+![Dashboard](Screenshots/dashboard.png) 
 
+### Manufacturer Dashboard  
+![Drug Tracking](Screenshots/Manufacturer.png)
+Manufacturers can register new drug batches on the blockchain, ensuring end-to-end traceability and authenticity.
 
-### Drug Tracking UI  
-![Drug Tracking](screenshots/tracking.png) 
+### Intermediary Dashboard
+![Drug Tracking](Screenshots/Intermediary.png)
+Intermediaries can verify, track, and update the status of drug shipments in real-time, ensuring transparency across the supply chain.
+
+### Consumer Dashboard
+ ![QR](Screenshots/Scanning.png)
+ Consumers can scan a QR code to instantly access detailed information about their medication, including its origin, batch number, and supply chain history.
