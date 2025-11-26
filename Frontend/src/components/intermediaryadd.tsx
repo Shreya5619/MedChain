@@ -27,7 +27,9 @@ const IntermediaryAdd = () => {
           drug_id: formData.drugId,
           batch: formData.batch,
           sender: sender,
-          receiver: formData.receiver
+          receiver: formData.receiver,
+          status: "in-transit",
+          location: "Unknown",
         }),
       });
 
