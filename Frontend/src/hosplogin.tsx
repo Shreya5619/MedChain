@@ -1,7 +1,5 @@
 import React from "react";
 import Navbar from "./components/navbar";
-import LoginCard from "./components/logincard";
-import ManuCard from "./components/manulogincard";
 import HospitalCard from "./components/hospitallogin";
 
 const HospLog = () => {

@@ -29,13 +29,14 @@ print("Functions:", medchain_contract.functions)
 
 private_key = os.getenv("PRIVATE_KEY") # NEVER hardcode in production; use env vars
 account = Account.from_key(private_key)
+receiver_address = os.getenv("RECEIVER_ADDRESS")
 
 print("Using account:", account.address)# nonce = w3.eth.get_transaction_count(account.address)
 
 def send_add_transaction(drug_id, batch, receiver, status, location):
     print("Preparing to send addTransaction with:", drug_id, batch, receiver, status, location)
     
-    receiver = "0xc27722fda98eba32540ee267e15463bce5eabc80"  # your address
+    receiver = receiver_address
     receiver = Web3.to_checksum_address(receiver)
     nonce = w3.eth.get_transaction_count(account.address)
     print("Current nonce:", nonce)
@@ -74,6 +75,7 @@ def send_add_transaction(drug_id, batch, receiver, status, location):
 def add():
     print("Received /add request")
     data = request.get_json()
+    print("Request data:", data)
     try:
         receipt = send_add_transaction(
             data['drug_id'],
@@ -107,9 +109,7 @@ def generate_drug():
         print("manu_date:", manu_date)
         print("exp_date:", exp_date)
         loc="avdd"
-        #drug_id = medchain_contract.functions.generateDrugId( drug_name, manufacturer_name, batch, manu_date, exp_date,loc ).call()
-
-        drug_id= "c3be927d4cb22cd46d6492165e20b4cda706a51188ccb0a250761db31fe335fd"
+        drug_id = medchain_contract.functions.generateDrugId( drug_name, manufacturer_name, batch, manu_date, exp_date,loc ).call()
         print("Generated Drug ID (hex):", drug_id)
         return jsonify({"drug_id": drug_id}), 200
 

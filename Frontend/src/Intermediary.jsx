@@ -15,8 +15,8 @@ const IntermediaryDashboard = () => {
   });
 
     useEffect(() => {
-      const storedKey = localStorage.getItem("privateKeyInt");
-      const storedKey2 = localStorage.getItem("publicKeyInt");
+      const storedKey = localStorage.getItem("privateKey");
+      const storedKey2 = localStorage.getItem("publicKey");
       if (storedKey && storedKey2) {
         setPrivateKey(storedKey);
         setPublicKey(storedKey2);
@@ -92,7 +92,7 @@ const IntermediaryDashboard = () => {
     <div className="flex flex-col items-center">
     <div className="w-full mt-24 max-w-md p-6 bg-white rounded-lg shadow-lg">
       <h2 className="text-2xl font-bold text-center text-purple-600 mb-6">
-        Enter Private Key
+        Intermediary Login
       </h2>
       <div>
           <h2 className="font-bold text-gray-700">

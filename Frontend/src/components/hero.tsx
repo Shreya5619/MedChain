@@ -21,7 +21,7 @@ const HeroSection = () => {
             Ensure transparency, traceability, and trust in drug distribution with our state-of-the-art blockchain solution.
           </p>
           <div className="flex flex-wrap justify-center gap-4">
-            <a href="/login">
+            <a href="/signup">
               <button
                 className="px-6 py-3 bg-white text-purple-600 font-semibold rounded-md shadow-lg hover:bg-gray-100 transition ease-in-out duration-300"
               >
