@@ -108,7 +108,7 @@ def generate_drug():
         print("batch:", batch)
         print("manu_date:", manu_date)
         print("exp_date:", exp_date)
-        loc="avdd"
+        loc="-"
         drug_id = medchain_contract.functions.generateDrugId( drug_name, manufacturer_name, batch, manu_date, exp_date,loc ).call()
         print("Generated Drug ID (hex):", drug_id)
         return jsonify({"drug_id": drug_id}), 200

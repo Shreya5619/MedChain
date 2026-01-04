@@ -265,7 +265,7 @@ const ManufacturerDashboard = () => {
         expiryDate: "",
       });
 
-      alert(`✅ Drug batch created!\nBlockchain ID: ${blockchainDrugId}\nStatus: Manufactured`);
+      alert(`✅ Drug batch created!\nBatch ID: ${blockchainDrugId}\nStatus: Manufactured`);
 
     } catch (error) {
       console.error("Upload error:", error);
@@ -381,18 +381,7 @@ const ManufacturerDashboard = () => {
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-4">
                     <div>
                       <p className="text-gray-700 mb-1"><strong>Batch ID:</strong></p>
-                      <p className="font-mono text-sm bg-blue-50 p-3 rounded-lg">{drug.batch_id}</p>
-                    </div>
-                    <div>
-                      <p><strong>Blockchain ID:</strong> {drug.blockchain_height}</p>
-                      <p><strong>Status:</strong>
-                        <span className={`ml-2 px-3 py-1 rounded-full text-xs font-semibold ${drug.status === 'Manufactured'
-                          ? 'bg-green-100 text-green-800'
-                          : 'bg-gray-100 text-gray-800'
-                          }`}>
-                          {drug.status}
-                        </span>
-                      </p>
+                      <p className="font-mono text-sm bg-blue-50 p-3 w-128 rounded-lg">{drug.batch_id}</p>
                     </div>
                   </div>
                   <div className="grid grid-cols-2 gap-4 mb-4">
@@ -401,6 +390,14 @@ const ManufacturerDashboard = () => {
                       <p><strong>Created:</strong> {new Date(drug.created_on).toLocaleDateString()}</p>
                     </div>
                     <div>
+                      <p><strong>Status:</strong>
+                        <span className={`ml-2 px-3 py-1 rounded-full text-xs font-semibold ${drug.status === 'Manufactured'
+                          ? 'bg-green-100 text-green-800'
+                          : 'bg-gray-100 text-gray-800'
+                          }`}>
+                          {drug.status}
+                        </span>
+                      </p>
                       <p><strong>Expiry:</strong> {drug.expiry_date}</p>
                     </div>
                   </div>
