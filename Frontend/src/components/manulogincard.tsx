@@ -41,7 +41,7 @@ const ManuCard: React.FC = () => {
 
   // Generate random private key (32 bytes hex) and derive public key (SHA256 hash)
   const generateKeyPair = (): { privateKey: string; publicKey: string } => {
-    const privateKey = Array.from({ length: 32 }, () => 
+    const privateKey = Array.from({ length: 32 }, () =>
       Math.floor(Math.random() * 16).toString(16)
     ).join('');
     const publicKey = sha256(privateKey); // SHA256 hash as public key
@@ -49,61 +49,65 @@ const ManuCard: React.FC = () => {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  setLoading(true);
+    e.preventDefault();
+    setLoading(true);
 
-  try {
-    // 1. Generate UUID and keypair
-    const orgId = uuidv4();
-    const { privateKey, publicKey } = generateKeyPair();
+    try {
+      // 1. Generate UUID and keypair
+      const orgId = uuidv4();
+      const { privateKey, publicKey } = generateKeyPair();
 
-    // 2. Insert into Organization first
-    const { error: orgError } = await supabase
-      .from('Organization')
-      .insert({
-        org_id: orgId,
-        org_type: ['manufacturer'],
-        name: formData.name,
-        email: formData.email,
-        public_key: publicKey,
-        // created_at will be default now()
-        // verified will be default null
-      });
+      // 2. Insert into Organization first
+      const { error: orgError } = await supabase
+        .from('Organization')
+        .insert({
+          org_id: orgId,
+          org_type: ['Manufacturer'],
+          name: formData.name,
+          email: formData.email,
+          public_key: publicKey,
+          // created_at will be default now()
+          // verified will be default null
+        });
 
-    if (orgError) throw orgError;
+      if (orgError) throw orgError;
 
-    // 3. Insert into Manufacturer table using the same org_id
-    const { error: manuError } = await supabase
-      .from('Manufacturer')
-      .insert({
-        org_id: orgId,
-        // add any manufacturer-specific columns that still exist
-      });
+      // 3. Insert into Manufacturer table using the same org_id
+      const { error: manuError } = await supabase
+        .from('Manufacturer')
+        .insert({
+          org_id: orgId,
+          manufacturer_license: formData.manufacturerLicense,
+          gmp_certification: formData.gmpCertification,
+          import_export_license: formData.importExportLicense,
+          batch_registration: formData.batchRegistration,
+          // add any manufacturer-specific columns that still exist
+        });
 
-    if (manuError) throw manuError;
+      if (manuError) throw manuError;
 
-    // 4. Store in localStorage
-    localStorage.setItem('orgId', orgId);
-    localStorage.setItem('privateKey', privateKey);
-    localStorage.setItem('publicKey', publicKey);
+      // 4. Store in localStorage
+      localStorage.setItem('orgId', orgId);
+      localStorage.setItem('privateKey', privateKey);
+      localStorage.setItem('publicKey', publicKey);
 
-    setSuccess(true);
+      setSuccess(true);
 
-    alert(
-      `✅ Account created successfully!\n\n` +
-      `Org ID: ${orgId}\n` +
-      `Private Key: ${privateKey}\n` +
-      `Public Key: ${publicKey}\n\n` +
-      `⚠️  SAVE THESE KEYS SAFELY - THEY WON'T BE SHOWN AGAIN!\n\n` +
-      `📧 Verification email will be sent to ${formData.email} shortly.`
-    );
-  } catch (error) {
-    console.error('Error:', error);
-    alert('Failed to create account. Please try again.');
-  } finally {
-    setLoading(false);
-  }
-};
+      alert(
+        `✅ Account created successfully!\n\n` +
+        `Org ID: ${orgId}\n` +
+        `Private Key: ${privateKey}\n` +
+        `Public Key: ${publicKey}\n\n` +
+        `⚠️  SAVE THESE KEYS SAFELY - THEY WON'T BE SHOWN AGAIN!\n\n` +
+        `📧 Verification email will be sent to ${formData.email} shortly.`
+      );
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Failed to create account. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
 
   if (success) {
@@ -114,7 +118,7 @@ const ManuCard: React.FC = () => {
           <p className="text-gray-700 dark:text-gray-300 mb-6">
             Check your email for verification. Your keys are saved in localStorage.
           </p>
-          <button 
+          <button
             onClick={() => window.location.reload()}
             className="bg-purple-600 hover:bg-purple-700 text-black font-bold py-2 px-6 rounded-lg"
           >
@@ -142,12 +146,12 @@ const ManuCard: React.FC = () => {
             <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               Manufacturer Name
             </label>
-            <input 
-              type="text" 
+            <input
+              type="text"
               name="name"
               id="name"
-              placeholder="Enter Manufacturer Name" 
-              required 
+              placeholder="Enter Manufacturer Name"
+              required
               value={formData.name}
               onChange={handleChange}
               className="mt-1 block w-full p-2.5 border border-gray-300 rounded-lg bg-white text-gray-900 shadow-sm focus:ring-purple-500 focus:border-purple-500 "
@@ -158,12 +162,12 @@ const ManuCard: React.FC = () => {
             <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               Email ID
             </label>
-            <input 
-              type="email" 
+            <input
+              type="email"
               name="email"
               id="email"
-              placeholder="Enter your Email" 
-              required 
+              placeholder="Enter your Email"
+              required
               value={formData.email}
               onChange={handleChange}
               className="mt-1 block w-full p-2.5 border border-gray-300 rounded-lg bg-white text-gray-900 shadow-sm focus:ring-purple-500 focus:border-purple-500 "
@@ -175,11 +179,11 @@ const ManuCard: React.FC = () => {
             <label htmlFor="manufacturerLicense" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               Drug Manufacturing Facility License
             </label>
-            <input 
-              type="text" 
-              name="manufacturerLicense" 
-              id="manufacturerLicense" 
-              placeholder="Enter License Number" 
+            <input
+              type="text"
+              name="manufacturerLicense"
+              id="manufacturerLicense"
+              placeholder="Enter License Number"
               value={formData.manufacturerLicense}
               onChange={handleChange}
               className="mt-1 block w-full p-2.5 border border-gray-300 rounded-lg bg-white text-gray-900 shadow-sm focus:ring-purple-500 focus:border-purple-500 "
@@ -190,11 +194,11 @@ const ManuCard: React.FC = () => {
             <label htmlFor="facilityLicense" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               GMP Certification
             </label>
-            <input 
-              type="text" 
-              name="facilityLicense" 
-              id="facilityLicense" 
-              placeholder="Enter GMP Number"  
+            <input
+              type="text"
+              name="facilityLicense"
+              id="facilityLicense"
+              placeholder="Enter GMP Number"
               value={formData.facilityLicense}
               onChange={handleChange}
               className="mt-1 block w-full p-2.5 border border-gray-300 rounded-lg bg-white text-gray-900 shadow-sm focus:ring-purple-500 focus:border-purple-500 "
@@ -205,11 +209,11 @@ const ManuCard: React.FC = () => {
             <label htmlFor="gmpCertification" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               Import/Export License (optional)
             </label>
-            <input 
-              type="text" 
-              name="gmpCertification" 
-              id="gmpCertification" 
-              placeholder="Enter License Number" 
+            <input
+              type="text"
+              name="gmpCertification"
+              id="gmpCertification"
+              placeholder="Enter License Number"
               value={formData.gmpCertification}
               onChange={handleChange}
               className="mt-1 block w-full p-2.5 border border-gray-300 rounded-lg bg-white text-gray-900 shadow-sm focus:ring-purple-500 focus:border-purple-500 "
@@ -220,10 +224,10 @@ const ManuCard: React.FC = () => {
             <label htmlFor="importExportLicense" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               Batch/Drug Registration Number
             </label>
-            <input 
-              type="text" 
-              name="importExportLicense" 
-              id="importExportLicense" 
+            <input
+              type="text"
+              name="importExportLicense"
+              id="importExportLicense"
               placeholder="Enter Registration Number"
               value={formData.importExportLicense}
               onChange={handleChange}
@@ -235,19 +239,19 @@ const ManuCard: React.FC = () => {
             <label htmlFor="batchRegistration" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               Batch Registration Number
             </label>
-            <input 
-              type="text" 
-              name="batchRegistration" 
-              id="batchRegistration" 
-              placeholder="Enter Batch Number"  
+            <input
+              type="text"
+              name="batchRegistration"
+              id="batchRegistration"
+              placeholder="Enter Batch Number"
               value={formData.batchRegistration}
               onChange={handleChange}
               className="mt-1 block w-full p-2.5 border border-gray-300 rounded-lg bg-white text-gray-900 shadow-sm focus:ring-purple-500 focus:border-purple-500 "
             />
           </div>
 
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             disabled={loading}
             className="w-full bg-purple-600 hover:bg-purple-700 disabled:bg-gray-400 text-white font-bold py-2 px-4 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-purple-500"
           >

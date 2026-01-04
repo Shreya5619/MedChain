@@ -32,6 +32,20 @@ const ManufacturerDashboard = () => {
   });
 
   useEffect(() => {
+    // Pre-fill form data from local storage if available
+    const storedOrgId = localStorage.getItem("manufacture_id") || localStorage.getItem("orgId");
+    const storedPrivKey = localStorage.getItem("privateKey");
+    const storedPubKey = localStorage.getItem("publicKey");
+
+    if (storedOrgId) {
+      setFormData(prev => ({
+        ...prev,
+        manufacture_id: storedOrgId,
+        privkey: storedPrivKey || "",
+        publickey: storedPubKey || ""
+      }));
+    }
+
     checkStoredAuth();
     loadDrugsFromDB(); // Load existing drugs from Supabase
   }, []);
@@ -42,9 +56,10 @@ const ManufacturerDashboard = () => {
       const { data, error } = await supabase
         .from('Drug_batch')
         .select('*')
-        .eq('manufactured_by', localStorage.getItem("manufacture_id"))
+        .select('*')
+        .eq('manufactured_by', localStorage.getItem("manufacture_id") || localStorage.getItem("orgId"))
         .order('created_on', { ascending: false });
-      
+
       if (data) {
         setDrugs(data);
       }
@@ -55,7 +70,7 @@ const ManufacturerDashboard = () => {
 
   const checkStoredAuth = async () => {
     const storedKey = localStorage.getItem("privateKey");
-    const storedOrgId = localStorage.getItem("manufacture_id");
+    const storedOrgId = localStorage.getItem("manufacture_id") || localStorage.getItem("orgId");
     if (storedKey && storedOrgId) {
       const verificationResult = await verifyManufacturer(storedOrgId, storedKey);
       if (verificationResult) {
@@ -63,7 +78,10 @@ const ManufacturerDashboard = () => {
         setPublicKey(verificationResult.publicKey);
         setIsAuthenticated(true);
       } else {
-        localStorage.clear();
+        // Validation failed, but do NOT clear localStorage automatically.
+        // This allows the user to correct the issue or wait for verification without losing their keys.
+        console.warn("Stored credentials verification failed");
+        setIsAuthenticated(false);
       }
     }
   };
@@ -73,7 +91,7 @@ const ManufacturerDashboard = () => {
       setLoading(true);
       const { data, error } = await supabase
         .from('Organization')
-        .select('*' )
+        .select('*')
         .eq('org_id', manufacture_id)
         .single();
 
@@ -95,7 +113,7 @@ const ManufacturerDashboard = () => {
 
       const privateKeyHash = sha256(privateKey);
       console.log("Computed private key hash:", privateKeyHash);
-      
+
       if (privateKeyHash === data.public_key) {
         return { publicKey: data.public_key, orgId: manufacture_id };
       } else {
@@ -111,7 +129,7 @@ const ManufacturerDashboard = () => {
     }
   };
 
-  
+
 
   const handleSavePrivateKey = async () => {
     if (!formData.manufacture_id || !formData.privkey) {
@@ -124,17 +142,17 @@ const ManufacturerDashboard = () => {
       localStorage.setItem("privateKey", formData.privkey);
       localStorage.setItem("manufacture_id", formData.manufacture_id);
       localStorage.setItem("publicKey", result.publicKey);
-      
+
       setPrivateKey(formData.privkey);
       setPublicKey(result.publicKey);
       setIsAuthenticated(true);
-      
+
       setFormData({
         ...formData,
         privkey: "",
         manufacture_id: "",
       });
-      
+
       alert("Manufacturer authenticated successfully!");
     }
   };
@@ -150,16 +168,17 @@ const ManufacturerDashboard = () => {
   // 🚀 NEW: Store in Drug_batch table
   const storeDrugInSupabase = async (blockchainDrugId, quantity = 1000) => {
     try {// Generate UUID for batch_id
-      
+
       const { error } = await supabase
         .from('Drug_batch')
         .insert({
           batch_id: blockchainDrugId,
           created_on: new Date().toISOString(),
           expiry_date: formData.expiryDate,
-          status: 'Manufactured', 
+          status: 'Manufactured',
           quantity: quantity,
-          manufactured_by: localStorage.getItem("manufacture_id") ,
+          quantity: quantity,
+          manufactured_by: localStorage.getItem("manufacture_id") || localStorage.getItem("orgId"),
           drug_id: formData.drugId// Store blockchain drug ID
         });
 
@@ -203,8 +222,8 @@ const ManufacturerDashboard = () => {
         return;
       }
 
-        const blockchainDrugId =  result.drug_id;
-       const resp = await fetch("http://localhost:5000/add", {
+      const blockchainDrugId = result.drug_id;
+      const resp = await fetch("http://localhost:5000/add", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -212,7 +231,9 @@ const ManufacturerDashboard = () => {
         body: JSON.stringify({
           drug_id: blockchainDrugId,
           batch: formData.batchNumber,
-          sender: localStorage.getItem("manufacture_id"),
+          drug_id: blockchainDrugId,
+          batch: formData.batchNumber,
+          sender: localStorage.getItem("manufacture_id") || localStorage.getItem("orgId"),
           receiver: "Supply Chain",
           status: "manufactured",
           location: "Unknown",
@@ -221,20 +242,20 @@ const ManufacturerDashboard = () => {
       if (response.ok) {
         setFormData({
           drugId: "",
-        drugName: "",
-        batchNumber: "",
-        manufacturingDate: "",
-        expiryDate: "",
+          drugName: "",
+          batchNumber: "",
+          manufacturingDate: "",
+          expiryDate: "",
         });
       } else {
         alert("Failed to add transaction");
       }
       // 2. Store in Supabase Drug_batch table
       await storeDrugInSupabase(blockchainDrugId);
-      
+
       // 3. Refresh drugs list
       await loadDrugsFromDB();
-      
+
       // 4. Reset form
       setFormData({
         drugId: "",
@@ -243,9 +264,9 @@ const ManufacturerDashboard = () => {
         manufacturingDate: "",
         expiryDate: "",
       });
-      
+
       alert(`✅ Drug batch created!\nBlockchain ID: ${blockchainDrugId}\nStatus: Manufactured`);
-      
+
     } catch (error) {
       console.error("Upload error:", error);
       alert("Upload failed: " + error.message);
@@ -271,13 +292,13 @@ const ManufacturerDashboard = () => {
   return (
     <div className="bg-gradient-to-r from-blue-500 to-purple-600 flex flex-col min-h-screen">
       <ManuNav />
-      
+
       {isAuthenticated ? (
         <div className="flex flex-col items-center p-20 flex-grow">
           {/* Auth Status */}
           <div className="w-full max-w-md bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6">
             <div className="flex justify-between items-center">
-              <span>✅ Authenticated: {localStorage.getItem("manufacture_id")}</span>
+              <span>✅ Authenticated: {localStorage.getItem("manufacture_id") || localStorage.getItem("orgId")}</span>
               <button onClick={handleLogout} className="text-sm underline hover:text-green-900">
                 Logout
               </button>
@@ -364,12 +385,11 @@ const ManufacturerDashboard = () => {
                     </div>
                     <div>
                       <p><strong>Blockchain ID:</strong> {drug.blockchain_height}</p>
-                      <p><strong>Status:</strong> 
-                        <span className={`ml-2 px-3 py-1 rounded-full text-xs font-semibold ${
-                          drug.status === 'Manufactured' 
-                            ? 'bg-green-100 text-green-800' 
-                            : 'bg-gray-100 text-gray-800'
-                        }`}>
+                      <p><strong>Status:</strong>
+                        <span className={`ml-2 px-3 py-1 rounded-full text-xs font-semibold ${drug.status === 'Manufactured'
+                          ? 'bg-green-100 text-green-800'
+                          : 'bg-gray-100 text-gray-800'
+                          }`}>
                           {drug.status}
                         </span>
                       </p>
@@ -411,7 +431,7 @@ const ManufacturerDashboard = () => {
                   name="manufacture_id"
                   value={formData.manufacture_id}
                   onChange={handleFormChange}
-                  className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+                  className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent placeholder:text-gray-400"
                 />
               </div>
               <div>
@@ -420,11 +440,11 @@ const ManufacturerDashboard = () => {
                 </label>
                 <input
                   type="password"
-                  placeholder="Enter your private key (64 hex chars)"
                   name="privkey"
                   value={formData.privkey}
                   onChange={handleFormChange}
-                  className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+                  placeholder={localStorage.getItem("publicKey") ? `Public Key Hint: ${localStorage.getItem("publicKey")}` : "Enter your private key (64 hex chars)"}
+                  className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent placeholder:text-gray-400"
                 />
               </div>
               <button
