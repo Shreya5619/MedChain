@@ -52,6 +52,7 @@ const LoginCard = () => {
             <span className="ml-4 flex-1 font-encode">Signup as Consumer</span>
           </a>
         </li>
+
         <li>
           <a
             href="signup/hospital"
