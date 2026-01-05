@@ -17,7 +17,7 @@ const IntermediaryAdd = () => {
 
   const handleUpload = async () => {
     try {
-     const  sender=localStorage.getItem('publicKeyInt');
+      const sender = localStorage.getItem('publicKeyInt');
       const response = await fetch("http://localhost:5000/add", {
         method: "POST",
         headers: {
@@ -58,7 +58,7 @@ const IntermediaryAdd = () => {
       </h2>
 
       <div>
-        <label className="font-bold text-black">Drug ID</label>
+        <label className="font-bold text-black">Batch ID</label>
         <input
           type="text"
           placeholder="drugId"
@@ -70,7 +70,7 @@ const IntermediaryAdd = () => {
       </div>
 
       <div>
-        <label className="font-bold text-black">Batch</label>
+        <label className="font-bold text-black">Drug ID</label>
         <input
           type="text"
           placeholder="batch"

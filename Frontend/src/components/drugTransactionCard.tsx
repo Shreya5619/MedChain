@@ -25,7 +25,7 @@ const DrugTransactionCard: React.FC = () => {
     try {
       const response = await fetch('http://localhost:5000/searchDrug', {
         method: 'POST',
-        headers: {'Content-Type': 'application/json'},
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ drug_id: query }),
       });
       const data = await response.json();
@@ -61,9 +61,9 @@ const DrugTransactionCard: React.FC = () => {
     <div style={{ padding: '20px', maxWidth: '800px', margin: 'auto' }}>
       <Title level={2}>Drug Tracking</Title>
 
-      <Title level={3}>Search by Drug ID</Title>
+      <Title level={3}>Search by Batch ID</Title>
       <Input
-        placeholder="Enter Drug ID"
+        placeholder="Enter Batch ID"
         value={drugId}
         onChange={(e) => setDrugId(e.target.value)}
         style={{ marginBottom: '10px' }}
@@ -89,8 +89,8 @@ const DrugTransactionCard: React.FC = () => {
           dataSource={transactions}
           renderItem={(item) => (
             <Card title={`Timestamp: ${new Date(item.timestamp * 1000).toLocaleString()}`} style={{ marginTop: '20px' }}>
-              <Text><strong>Drug ID:</strong> {item.drugId}</Text><br />
-              <Text><strong>Batch:</strong> {item.batch}</Text><br />
+              <Text><strong>Batch ID:</strong> {item.drugId}</Text><br />
+              <Text><strong>Drug ID:</strong> {item.batch}</Text><br />
               <Text><strong>Status:</strong> {item.status}</Text><br />
               <Text><strong>Location:</strong> {item.location}</Text><br />
               <Text><strong>Sender:</strong> {item.sender}</Text><br />

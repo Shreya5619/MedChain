@@ -175,10 +175,9 @@ const ManufacturerDashboard = () => {
           batch_id: blockchainDrugId,
           created_on: new Date().toISOString(),
           expiry_date: formData.expiryDate,
-          status: 'Manufactured',
           quantity: quantity,
-          quantity: quantity,
-          manufactured_by: localStorage.getItem("manufacture_id") || localStorage.getItem("orgId"),
+          status: "Manufactured",
+          manufactured_by: localStorage.getItem("orgId"),
           drug_id: formData.drugId// Store blockchain drug ID
         });
 
@@ -209,7 +208,7 @@ const ManufacturerDashboard = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           drug_name: formData.drugId,
-          batch: formData.batchNumber,
+          batch: formData.drugId,
           manu_date: formData.manufacturingDate,
           exp_date: formData.expiryDate,
           manufacturer: publickey,
@@ -230,10 +229,8 @@ const ManufacturerDashboard = () => {
         },
         body: JSON.stringify({
           drug_id: blockchainDrugId,
-          batch: formData.batchNumber,
-          drug_id: blockchainDrugId,
-          batch: formData.batchNumber,
-          sender: localStorage.getItem("manufacture_id") || localStorage.getItem("orgId"),
+          batch: formData.drugId,
+          sender: localStorage.getItem("orgId"),
           receiver: "Supply Chain",
           status: "manufactured",
           location: "Unknown",
@@ -440,7 +437,7 @@ const ManufacturerDashboard = () => {
                   name="privkey"
                   value={formData.privkey}
                   onChange={handleFormChange}
-                  placeholder={localStorage.getItem("publicKey") ? `Public Key Hint: ${localStorage.getItem("publicKey")}` : "Enter your private key (64 hex chars)"}
+                  placeholder="Enter your private key (64 hex chars)"
                   className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent placeholder:text-gray-400"
                 />
               </div>
