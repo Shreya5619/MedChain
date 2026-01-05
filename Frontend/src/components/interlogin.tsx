@@ -54,25 +54,32 @@ const InterCard: React.FC = () => {
       const id = uuidv4();
       const { privateKey, publicKey } = generateKeyPair();
 
-      // Insert into your intermediary table
-      // Adjust table name and column names to exactly match Supabase:
-      // id (uuid, pk), email (text), public_key (text),
-      // "Wholesale Di" (text), "Drug Distribu" (text),
-      // "Pharmaceutic" (text), "Drug Import/" (text),
-      // "Compliance v" (text), verified (bool)
-      const { error } = await supabase.from('Intermediary').insert({
-        id,
-        Org_name: formData.name,
-        email: formData.email,
-        public_key: publicKey,
-        "Wholesale Distributor License": formData.wholesaleLicense,
-        "Drug Distribution Authorization": formData.distributionAuth,
-        "Pharmaceutical Dealer License": formData.pharmaDealerLicense,
-        "Drug Import/Export License": formData.importExportLicense,
-        "Compliance with Storage/Handling Regulations": formData.complianceDoc,
-      });
 
-      if (error) throw error;
+      const { error: orgError } = await supabase
+        .from('Organization')
+        .insert({
+          org_id: id,
+          org_type: ['Intermediary'],
+          name: formData.name,
+          email: formData.email,
+          public_key: publicKey,
+          // created_at will be default now()
+          // verified will be default null
+        });
+
+      if (orgError) throw orgError;
+
+      const { error: interror } = await supabase
+        .from('Intermediary').insert({
+          id,
+          "Wholesale Distributor License": formData.wholesaleLicense,
+          "Drug Distribution Authorization": formData.distributionAuth,
+          "Pharmaceutical Dealer License": formData.pharmaDealerLicense,
+          "Drug Import/Export License": formData.importExportLicense,
+          "Compliance with Storage/Handling Regulations": formData.complianceDoc,
+        });
+
+      if (interror) throw interror;
 
       localStorage.setItem('intermediaryId', id);
       localStorage.setItem('intermediaryPrivateKey', privateKey);
@@ -106,7 +113,7 @@ const InterCard: React.FC = () => {
         </h2>
 
         <form onSubmit={handleSubmit}>
-           <div className="mb-4">
+          <div className="mb-4">
             <label
               htmlFor="name"
               className="block text-sm font-medium text-gray-700 dark:text-gray-300"
