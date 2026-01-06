@@ -1,6 +1,6 @@
 import React from "react";
 import ManuNav from "./components/manunav";
-import DrugsByManufacturer from "./components/manu";
+import DrugsByUser from "./components/View";
 
 const ManuView = () => {
   return (
@@ -8,7 +8,7 @@ const ManuView = () => {
       <ManuNav />
       <div className="pt-24 pb-12 px-4 md:px-8 max-w-7xl mx-auto flex justify-center">
         <div className="w-full max-w-4xl">
-          <DrugsByManufacturer />
+          <DrugsByUser />
         </div>
       </div>
     </div>

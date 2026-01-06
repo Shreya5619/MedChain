@@ -1,5 +1,38 @@
 [
 	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "drugId",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "batchId",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "senderPubKey",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "receiverPubKey",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "status",
+				"type": "string"
+			}
+		],
+		"name": "addTransaction",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
 		"anonymous": false,
 		"inputs": [
 			{
@@ -15,27 +48,21 @@
 				"type": "string"
 			},
 			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "sender",
-				"type": "address"
-			},
-			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "receiver",
-				"type": "address"
-			},
-			{
 				"indexed": false,
 				"internalType": "string",
-				"name": "status",
+				"name": "senderPubKey",
 				"type": "string"
 			},
 			{
 				"indexed": false,
 				"internalType": "string",
-				"name": "location",
+				"name": "receiverPubKey",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "status",
 				"type": "string"
 			},
 			{
@@ -61,44 +88,6 @@
 				"type": "string"
 			},
 			{
-				"internalType": "address",
-				"name": "receiver",
-				"type": "address"
-			},
-			{
-				"internalType": "string",
-				"name": "status",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "location",
-				"type": "string"
-			}
-		],
-		"name": "addTransaction",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "string",
-				"name": "drugName",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "manufacturerName",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "batch",
-				"type": "string"
-			},
-			{
 				"internalType": "string",
 				"name": "manuDate",
 				"type": "string"
@@ -110,7 +99,7 @@
 			},
 			{
 				"internalType": "string",
-				"name": "location",
+				"name": "manufacturerPubKey",
 				"type": "string"
 			}
 		],
@@ -129,7 +118,7 @@
 		"inputs": [
 			{
 				"internalType": "string",
-				"name": "drugId",
+				"name": "batchId",
 				"type": "string"
 			}
 		],
@@ -148,23 +137,18 @@
 						"type": "string"
 					},
 					{
-						"internalType": "address",
-						"name": "sender",
-						"type": "address"
-					},
-					{
-						"internalType": "address",
-						"name": "receiver",
-						"type": "address"
-					},
-					{
 						"internalType": "string",
-						"name": "status",
+						"name": "senderPubKey",
 						"type": "string"
 					},
 					{
 						"internalType": "string",
-						"name": "location",
+						"name": "receiverPubKey",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "status",
 						"type": "string"
 					},
 					{
@@ -184,17 +168,49 @@
 	{
 		"inputs": [
 			{
-				"internalType": "address",
-				"name": "manufacturer",
-				"type": "address"
+				"internalType": "string",
+				"name": "pubKey",
+				"type": "string"
 			}
 		],
-		"name": "getDrugsByManufacturer",
+		"name": "getTransactionsByPublicKey",
 		"outputs": [
 			{
-				"internalType": "string[]",
+				"components": [
+					{
+						"internalType": "string",
+						"name": "drugId",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "batch",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "senderPubKey",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "receiverPubKey",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "status",
+						"type": "string"
+					},
+					{
+						"internalType": "uint256",
+						"name": "timestamp",
+						"type": "uint256"
+					}
+				],
+				"internalType": "struct MedChain.DrugTransaction[]",
 				"name": "",
-				"type": "string[]"
+				"type": "tuple[]"
 			}
 		],
 		"stateMutability": "view",

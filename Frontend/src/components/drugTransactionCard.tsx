@@ -6,9 +6,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 interface TransactionDetails {
   drugId: string;
   batch: string;
-  location: string;
-  receiver: string;
-  sender: string;
+  senderPubKey: string;
+  receiverPubKey: string;
   status: string;
   timestamp: number;
 }
@@ -56,7 +55,7 @@ const DrugTransactionCard: React.FC = () => {
       const response = await fetch('http://localhost:5000/searchDrug', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ drug_id: query }),
+        body: JSON.stringify({ batchId: query }),
       });
       const data = await response.json();
       if (data.drug_transactions) {
@@ -172,7 +171,7 @@ const DrugTransactionCard: React.FC = () => {
                           {new Date(t.timestamp * 1000).toLocaleString()}
                         </span>
                       </div>
-                      <h3 className="text-lg font-bold text-gray-900">{t.batch}</h3>
+                      <h3 className="text-lg font-bold text-gray-900">{t.batch.substring(0, 10)}...</h3>
                     </div>
                     <div className="text-right">
                       <div className="text-sm text-gray-500 font-mono bg-white border border-gray-200 px-2 py-1 rounded inline-block">
@@ -183,16 +182,12 @@ const DrugTransactionCard: React.FC = () => {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600">
                     <div className="flex items-center gap-2">
-                      <MapPin size={16} className="text-med-teal" />
-                      <span>Location: <strong>{t.location}</strong></span>
+                      <User size={16} className="text-med-teal" />
+                      <span>Sender: {t.senderPubKey.substring(0, 12)}...</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <User size={16} className="text-med-teal" />
-                      <span>Sender: {t.sender.substring(0, 12)}...</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <User size={16} className="text-med-teal" />
-                      <span>Receiver: {t.receiver.substring(0, 12)}...</span>
+                      <span>Receiver: {t.receiverPubKey == "manufactured" ? "" : t.receiverPubKey.substring(0, 12)}...</span>
                     </div>
                   </div>
                 </div>

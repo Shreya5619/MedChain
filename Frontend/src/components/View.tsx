@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Search, Package, Clock, Hash, MapPin, AlertCircle } from "lucide-react";
 import { motion } from "framer-motion";
 
-const DrugsByIntermediary = () => {
+const DrugsByUser = () => {
   const [user, setUser] = useState("");
   const [drugDetails, setDrugDetails] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -10,7 +10,7 @@ const DrugsByIntermediary = () => {
 
   React.useEffect(() => {
     const fetchTransactions = async () => {
-      const storedUser = localStorage.getItem("intermediaryPublicKey");
+      const storedUser = localStorage.getItem("publicKey");
       if (!storedUser) {
         alert("Please authenticate first.");
         return;
@@ -40,7 +40,7 @@ const DrugsByIntermediary = () => {
   return (
     <div className="bg-white p-8 rounded-3xl shadow-xl border border-gray-100">
       <div className="text-center mb-8">
-        <h2 className="text-3xl font-serif text-med-teal mb-2">Intermediary Records</h2>
+        <h2 className="text-3xl font-serif text-med-teal mb-2">Blockchain Records</h2>
         <p className="text-gray-500">View all transactions associated with you.</p>
       </div>
 
@@ -57,7 +57,7 @@ const DrugsByIntermediary = () => {
             >
               <div className="flex flex-col md:flex-row justify-between mb-4 border-b border-gray-200 pb-4">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-purple-100 text-purple-700 rounded-lg">
+                  <div className="p-2 bg-med-teal-light text-med-teal rounded-lg">
                     <Package size={20} />
                   </div>
                   <div>
@@ -69,7 +69,8 @@ const DrugsByIntermediary = () => {
                   </div>
                 </div>
                 <div className="mt-2 md:mt-0">
-                  <span className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-bold uppercase">
+                  <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase ${drug.status === 'manufactured' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'
+                    }`}>
                     {drug.status}
                   </span>
                 </div>
@@ -121,7 +122,7 @@ const DrugsByIntermediary = () => {
               <div className="bg-gray-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
                 <AlertCircle className="text-gray-300" size={32} />
               </div>
-              <p className="text-gray-500">No transactions found for this intermediary.</p>
+              <p className="text-gray-500">No blockchain records found for this key.</p>
             </div>
           )
         )}
@@ -130,4 +131,4 @@ const DrugsByIntermediary = () => {
   );
 };
 
-export default DrugsByIntermediary;
+export default DrugsByUser;

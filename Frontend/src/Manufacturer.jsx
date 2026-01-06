@@ -38,11 +38,19 @@ const ManufacturerDashboard = () => {
 
       const { data } = await supabase
         .from('Drug_batch')
-        .select('*')
+        .select(`
+          *,
+          Drug (
+            drug_name
+          )
+        `)
         .eq('manufactured_by', orgId)
         .order('created_on', { ascending: false });
 
-      if (data) setDrugs(data);
+      if (data) {
+        console.log('Fetched drugs:', data);
+        setDrugs(data);
+      }
     } catch (error) {
       console.error('Failed to load drugs:', error);
     }
@@ -127,11 +135,11 @@ const ManufacturerDashboard = () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          drug_name: formData.drugId,
+          drugId: formData.drugId,
           batch: formData.drugId,
-          manu_date: formData.manufacturingDate,
-          exp_date: formData.expiryDate,
-          manufacturer: publickey,
+          manuDate: formData.manufacturingDate,
+          expDate: formData.expiryDate,
+          manufacturer_pub_key: publickey,
         }),
       });
 
@@ -145,16 +153,15 @@ const ManufacturerDashboard = () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          drug_id: blockchainDrugId,
-          batch: formData.drugId,
-          sender: orgId,
-          receiver: "Supply Chain",
-          status: "manufactured",
-          location: "Unknown",
+          drugId: formData.drugId,
+          batchId: blockchainDrugId,
+          senderPubKey: publickey,
+          receiverPubKey: "manufactured",
+          status: "Manufactured",
         }),
       });
-
-      if (!addResponse.ok) throw new Error("Failed to add transaction to blockchain");
+      const addResult = await addResponse.json();
+      if (!addResponse.ok) throw new Error(addResult.error || "Failed to add transaction");
 
       // 3. Store in Supabase
       await storeDrugInSupabase(blockchainDrugId);
@@ -246,7 +253,7 @@ const ManufacturerDashboard = () => {
 
                 <div className="space-y-4">
                   <div className="space-y-1">
-                    <label className="text-sm font-medium text-gray-600">Drug Name / ID</label>
+                    <label className="text-sm font-medium text-gray-600">Drug ID</label>
                     <input
                       name="drugId"
                       value={formData.drugId}
@@ -342,7 +349,7 @@ const ManufacturerDashboard = () => {
                     <p className="text-gray-500">No active batches found.</p>
                   </div>
                 ) : (
-                  drugs.map((drug) => (
+                  drugs.slice(0, 4).map((drug) => (
                     <div key={drug.batch_id} className="bg-white p-6 rounded-2xl shadow-sm hover:shadow-md transition-shadow border border-gray-100 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
                       <div className="flex-1">
                         <div className="flex items-center space-x-3 mb-2">
@@ -354,7 +361,7 @@ const ManufacturerDashboard = () => {
                           </span>
                         </div>
                         <h3 className="text-lg font-bold text-gray-800 mb-1">
-                          {drug.drug_id || "Unknown Drug"}
+                          {drug.Drug?.drug_name || drug.drug_id || "Unknown Drug"}
                         </h3>
                         <p className="text-xs text-gray-500 font-mono bg-gray-50 p-1.5 rounded inline-block">
                           ID: {drug.batch_id}

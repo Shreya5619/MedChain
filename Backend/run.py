@@ -33,27 +33,27 @@ receiver_address = os.getenv("RECEIVER_ADDRESS")
 
 print("Using account:", account.address)# nonce = w3.eth.get_transaction_count(account.address)
 
-def send_add_transaction(drug_id, batch, receiver, status, location):
-    print("Preparing to send addTransaction with:", drug_id, batch, receiver, status, location)
+def send_add_transaction(drugId, batchId,senderPubKey, receiverPubKey, status):
+    print("Preparing to send addTransaction with:", drugId, batchId, senderPubKey, receiverPubKey, status)
     
     receiver = receiver_address
     receiver = Web3.to_checksum_address(receiver)
     nonce = w3.eth.get_transaction_count(account.address)
     print("Current nonce:", nonce)
     gas_estimate = medchain_contract.functions.addTransaction(
-    drug_id,
-    batch,
-    receiver,
-    status,
-    location
+    drugId,
+    batchId,
+    senderPubKey,
+    receiverPubKey,
+    status
 ).estimate_gas({'from': account.address})
 
     txn = medchain_contract.functions.addTransaction(
-        drug_id,
-        batch,
-        receiver,
-        status,
-        location
+        drugId,
+        batchId,
+        senderPubKey,
+        receiverPubKey,
+        status
     ).build_transaction({
         'chainId': 11155111,
         'gas': gas_estimate + 10000,  # Add some padding
@@ -78,11 +78,11 @@ def add():
     print("Request data:", data)
     try:
         receipt = send_add_transaction(
-            data['drug_id'],
-            data['batch'],
-            data['receiver'],       # Make sure the frontend sends this field with a valid address
-            data['status'],
-            data['location']
+            data['drugId'],
+            data['batchId'],
+            data['senderPubKey'],       # Make sure the frontend sends this field with a valid address
+            data['receiverPubKey'],
+            data['status']
         )
         return jsonify({"message": "Transaction successful", "tx_hash": receipt.transactionHash.hex()}), 200
     except Exception as e:
@@ -94,22 +94,16 @@ def add():
 @app.route('/genId', methods=['POST'])
 def generate_drug():
     data = request.get_json()
-    drug_name = data.get("drug_name")
-    manufacturer_name = data.get("manufacturer")
+    drugId = data.get("drugId")
+    manufacturer_pub_key = data.get("manufacturer_pub_key")
     batch = data.get("batch")
-    manu_date = data.get("manu_date")
-    exp_date = data.get("exp_date")
-    if not all([drug_name, manufacturer_name, batch, manu_date, exp_date]):
+    manuDate = data.get("manuDate")
+    expDate = data.get("expDate")
+    if not all([drugId, manufacturer_pub_key, batch, manuDate, expDate]):
         return jsonify({"message": "Missing required fields"}), 400
     try:
-        # Call generateDrugId (no gas, no tx)
-        print("drug_name:", drug_name)
-        print("manufacturer_name:", manufacturer_name)
-        print("batch:", batch)
-        print("manu_date:", manu_date)
-        print("exp_date:", exp_date)
-        loc="-"
-        drug_id = medchain_contract.functions.generateDrugId( drug_name, manufacturer_name, batch, manu_date, exp_date,loc ).call()
+        drug_id = ""
+        drug_id = medchain_contract.functions.generateDrugId( drugId, batch, manuDate, expDate,manufacturer_pub_key ).call()
         print("Generated Drug ID (hex):", drug_id)
         return jsonify({"drug_id": drug_id}), 200
 
@@ -120,12 +114,12 @@ def generate_drug():
 @app.route('/searchDrug', methods=['POST'])
 def search_drug():
     data = request.get_json()
-    drug_id = data.get('drug_id')
-    if not drug_id:
-        return jsonify({"message": "Missing 'drug_id' field"}), 400
+    batchId = data.get('batchId')
+    if not batchId:
+        return jsonify({"message": "Missing 'batchId' field"}), 400
     try:
         # Call getDrugTransactions to fetch the full transaction history of the drug
-        transactions = medchain_contract.functions.getDrugTransactions(drug_id).call()
+        transactions = medchain_contract.functions.getDrugTransactions(batchId).call()
         
         # transactions is an array of tuples matching DrugTransaction struct
         # Each tuple: (drugId, batch, sender, receiver, status, location, timestamp)
@@ -134,18 +128,46 @@ def search_drug():
             tx_dict = {
                 "drugId": tx[0],
                 "batch": tx[1],
-                "sender": tx[2],
-                "receiver": tx[3],
+                "senderPubKey": tx[2],
+                "receiverPubKey": tx[3],
                 "status": tx[4],
-                "location": tx[5],
-                "timestamp": tx[6]
+                "timestamp": tx[5]
             }
             tx_list.append(tx_dict)
-        
+        print("Drug transactions:", tx_list)
         return jsonify({"drug_transactions": tx_list}), 200
     except Exception as e:
         print("Error searching drug:", str(e))
         return jsonify({"message": f"Drug search failed: {str(e)}"}), 500
+
+
+@app.route('/drugsByUser', methods=['GET'])
+def drugs_by_user():
+    user_pub_key = request.args.get('user')
+    if not user_pub_key:
+        return jsonify({"message": "Missing 'user' query parameter"}), 400
+    try:
+        # Call getTransactionsByPublicKey from the smart contract
+        transactions = medchain_contract.functions.getTransactionsByPublicKey(user_pub_key).call()
+        
+        # transactions is an array of tuples matching DrugTransaction struct
+        # Each tuple: (drugId, batch, senderPubKey, receiverPubKey, status, timestamp)
+        tx_list = []
+        for tx in transactions:
+            tx_dict = {
+                "drugId": tx[0],
+                "batch": tx[1],
+                "senderPubKey": tx[2],
+                "receiverPubKey": tx[3],
+                "status": tx[4],
+                "timestamp": tx[5]
+            }
+            tx_list.append(tx_dict)
+        
+        return jsonify(tx_list), 200
+    except Exception as e:
+        print("Error fetching transactions by user:", str(e))
+        return jsonify({"message": f"Failed to fetch transactions: {str(e)}"}), 500
 
 
 if __name__ == "__main__":

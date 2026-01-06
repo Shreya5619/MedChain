@@ -4,11 +4,11 @@ import { Package, Truck, User, FileText, Send } from 'lucide-react';
 const IntermediaryAdd = () => {
   const [formData, setFormData] = useState({
     drugId: "",
-    batch: "",
-    sender: "",
-    receiver: "",
+    batchId: "",
+    senderPubKey: "",
+    receiverPubKey: "",
+    status: "",
     quantity: "",
-    details: "",
   });
   const [loading, setLoading] = useState(false);
 
@@ -28,12 +28,11 @@ const IntermediaryAdd = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          drug_id: formData.drugId,
-          batch: formData.batch,
-          sender: sender,
-          receiver: formData.receiver,
-          status: "in-transit",
-          location: "Intermediary Hub", // Updated default location
+          drugId: formData.drugId,
+          batchId: formData.batchId,
+          senderPubKey: sender,
+          receiverPubKey: formData.receiverPubKey,
+          status: "in-transit"
         }),
       });
 
@@ -41,11 +40,11 @@ const IntermediaryAdd = () => {
         alert("✅ Transaction successfully added to the ledger.");
         setFormData({
           drugId: "",
-          batch: "",
-          sender: "",
-          receiver: "",
+          batchId: "",
+          senderPubKey: "",
+          receiverPubKey: "",
+          status: "",
           quantity: "",
-          details: "",
         });
       } else {
         alert("Failed to add transaction. Please try again.");
@@ -69,23 +68,11 @@ const IntermediaryAdd = () => {
 
       <div className="space-y-4">
         <div className="space-y-1">
-          <label className="text-sm font-medium text-gray-600 flex items-center gap-1"><Package size={14} /> Batch ID</label>
+          <label className="text-sm font-medium text-gray-600 flex items-center gap-1"><Package size={14} /> Drug ID</label>
           <input
             type="text"
             name="drugId"
             value={formData.drugId}
-            onChange={handleChange}
-            placeholder="e.g. BATCH-001"
-            className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-med-teal outline-none transition-all"
-          />
-        </div>
-
-        <div className="space-y-1">
-          <label className="text-sm font-medium text-gray-600 flex items-center gap-1"><FileText size={14} /> Drug ID</label>
-          <input
-            type="text"
-            name="batch"
-            value={formData.batch}
             onChange={handleChange}
             placeholder="e.g. DRUG-XYZ"
             className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-med-teal outline-none transition-all"
@@ -93,11 +80,23 @@ const IntermediaryAdd = () => {
         </div>
 
         <div className="space-y-1">
-          <label className="text-sm font-medium text-gray-600 flex items-center gap-1"><User size={14} /> Receiver ID</label>
+          <label className="text-sm font-medium text-gray-600 flex items-center gap-1"><FileText size={14} /> Batch ID</label>
           <input
             type="text"
-            name="receiver"
-            value={formData.receiver}
+            name="batchId"
+            value={formData.batchId}
+            onChange={handleChange}
+            placeholder="e.g. BATCH-001"
+            className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-med-teal outline-none transition-all"
+          />
+        </div>
+
+        <div className="space-y-1">
+          <label className="text-sm font-medium text-gray-600 flex items-center gap-1"><User size={14} /> Receiver Public Key</label>
+          <input
+            type="text"
+            name="receiverPubKey"
+            value={formData.receiverPubKey}
             onChange={handleChange}
             placeholder="Receiver Public Key or Org ID"
             className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-med-teal outline-none transition-all"
