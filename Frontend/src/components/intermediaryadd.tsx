@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Package, Truck, User, FileText, Send } from 'lucide-react';
 
 const IntermediaryAdd = () => {
   const [formData, setFormData] = useState({
@@ -9,6 +10,7 @@ const IntermediaryAdd = () => {
     quantity: "",
     details: "",
   });
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -16,8 +18,10 @@ const IntermediaryAdd = () => {
   };
 
   const handleUpload = async () => {
+    setLoading(true);
     try {
-      const sender = localStorage.getItem('publicKeyInt');
+      const sender = localStorage.getItem('intermediaryPublicKey') || localStorage.getItem('publicKey'); // Fallback check
+
       const response = await fetch("http://localhost:5000/add", {
         method: "POST",
         headers: {
@@ -29,12 +33,12 @@ const IntermediaryAdd = () => {
           sender: sender,
           receiver: formData.receiver,
           status: "in-transit",
-          location: "Unknown",
+          location: "Intermediary Hub", // Updated default location
         }),
       });
 
       if (response.ok) {
-        alert("Transaction added successfully");
+        alert("✅ Transaction successfully added to the ledger.");
         setFormData({
           drugId: "",
           batch: "",
@@ -44,85 +48,89 @@ const IntermediaryAdd = () => {
           details: "",
         });
       } else {
-        alert("Failed to add transaction");
+        alert("Failed to add transaction. Please try again.");
       }
     } catch (error) {
       console.error("Error:", error);
+      alert("Network error. Please check your connection.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="w-full max-w-md bg-white p-6 rounded-lg shadow-md border space-y-4">
-      <h2 className="text-2xl font-bold text-center text-purple-600 mb-4">
-        Intermediary
-      </h2>
-
-      <div>
-        <label className="font-bold text-black">Batch ID</label>
-        <input
-          type="text"
-          placeholder="drugId"
-          name="drugId"
-          value={formData.drugId}
-          onChange={handleChange}
-          className="w-full p-2 border rounded-md text-black"
-        />
+    <div className="bg-white p-8 rounded-3xl shadow-xl border border-gray-100">
+      <div className="flex items-center space-x-3 mb-6">
+        <div className="p-3 bg-med-teal-light rounded-xl text-med-teal">
+          <Truck size={24} />
+        </div>
+        <h2 className="text-2xl font-serif text-med-teal">Log Transaction</h2>
       </div>
 
-      <div>
-        <label className="font-bold text-black">Drug ID</label>
-        <input
-          type="text"
-          placeholder="batch"
-          name="batch"
-          value={formData.batch}
-          onChange={handleChange}
-          className="w-full p-2 border rounded-md text-black"
-        />
-      </div>
+      <div className="space-y-4">
+        <div className="space-y-1">
+          <label className="text-sm font-medium text-gray-600 flex items-center gap-1"><Package size={14} /> Batch ID</label>
+          <input
+            type="text"
+            name="drugId"
+            value={formData.drugId}
+            onChange={handleChange}
+            placeholder="e.g. BATCH-001"
+            className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-med-teal outline-none transition-all"
+          />
+        </div>
 
-      <div>
-        <label className="font-bold text-black">Receiver</label>
-        <input
-          type="text"
-          placeholder="receiver"
-          name="receiver"
-          value={formData.receiver}
-          onChange={handleChange}
-          className="w-full p-2 border rounded-md text-black"
-        />
-      </div>
+        <div className="space-y-1">
+          <label className="text-sm font-medium text-gray-600 flex items-center gap-1"><FileText size={14} /> Drug ID</label>
+          <input
+            type="text"
+            name="batch"
+            value={formData.batch}
+            onChange={handleChange}
+            placeholder="e.g. DRUG-XYZ"
+            className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-med-teal outline-none transition-all"
+          />
+        </div>
 
-      <div>
-        <label className="font-bold text-black">Quantity Sold</label>
-        <input
-          type="number"
-          placeholder="Quantity"
-          name="quantity"
-          value={formData.quantity}
-          onChange={handleChange}
-          className="w-full p-2 border rounded-md text-black"
-        />
-      </div>
+        <div className="space-y-1">
+          <label className="text-sm font-medium text-gray-600 flex items-center gap-1"><User size={14} /> Receiver ID</label>
+          <input
+            type="text"
+            name="receiver"
+            value={formData.receiver}
+            onChange={handleChange}
+            placeholder="Receiver Public Key or Org ID"
+            className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-med-teal outline-none transition-all"
+          />
+        </div>
 
-      <div>
-        <label className="font-bold text-black">Details</label>
-        <input
-          type="text"
-          placeholder="Other details"
-          name="details"
-          value={formData.details}
-          onChange={handleChange}
-          className="w-full p-2 border rounded-md text-black"
-        />
-      </div>
+        <div className="space-y-1">
+          <label className="text-sm font-medium text-gray-600">Quantity</label>
+          <input
+            type="number"
+            name="quantity"
+            value={formData.quantity}
+            onChange={handleChange}
+            placeholder="e.g. 500"
+            className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-med-teal outline-none transition-all"
+          />
+        </div>
 
-      <button
-        className="w-full py-2 bg-purple-600 text-white rounded-md"
-        onClick={handleUpload}
-      >
-        Add to Ledger
-      </button>
+        <button
+          onClick={handleUpload}
+          disabled={loading}
+          className="w-full py-4 mt-2 bg-med-teal text-white font-bold rounded-xl hover:bg-med-teal/90 transition-all shadow-md flex items-center justify-center space-x-2 disabled:opacity-70"
+        >
+          {loading ? (
+            <span>Processing...</span>
+          ) : (
+            <>
+              <Send size={18} />
+              <span>Record Transaction</span>
+            </>
+          )}
+        </button>
+      </div>
     </div>
   );
 };

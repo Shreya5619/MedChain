@@ -3,66 +3,46 @@ import ManuNav from "./components/manunav";
 import QRCode from "react-qr-code";
 import { createClient } from '@supabase/supabase-js';
 import { sha256 } from 'js-sha256';
-import { v4 as uuidv4 } from 'uuid'; // npm install uuid
+import { motion } from "framer-motion";
+import { Plus, Calendar, Package, Trash2, CheckCircle, AlertCircle } from 'lucide-react';
 
-// Supabase client
-console.log(import.meta.env.VITE_SUPABASE_URL, import.meta.env.VITE_SUPABASE_ANON_KEY);
 const supabase = createClient(
   import.meta.env.VITE_SUPABASE_URL,
   import.meta.env.VITE_SUPABASE_ANON_KEY
 );
-console.log("Supabase client initialized:", supabase);
 
 const ManufacturerDashboard = () => {
   const [drugs, setDrugs] = useState([]);
-  const [privatekey, setPrivateKey] = useState("");
-  const [publickey, setPublicKey] = useState("");
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [authLoading, setAuthLoading] = useState(false);
 
   const [formData, setFormData] = useState({
-    publickey: "",
-    privkey: "",
     manufacture_id: "",
+    privkey: "",
     drugId: "",
-    drugName: "",
     batchNumber: "",
     manufacturingDate: "",
     expiryDate: "",
   });
 
   useEffect(() => {
-    // Pre-fill form data from local storage if available
-    const storedOrgId = localStorage.getItem("manufacture_id") || localStorage.getItem("orgId");
-    const storedPrivKey = localStorage.getItem("privateKey");
-    const storedPubKey = localStorage.getItem("publicKey");
-
-    if (storedOrgId) {
-      setFormData(prev => ({
-        ...prev,
-        manufacture_id: storedOrgId,
-        privkey: storedPrivKey || "",
-        publickey: storedPubKey || ""
-      }));
-    }
-
     checkStoredAuth();
-    loadDrugsFromDB(); // Load existing drugs from Supabase
+    loadDrugsFromDB();
   }, []);
 
-  // Load drugs from Drug_batch table
   const loadDrugsFromDB = async () => {
     try {
-      const { data, error } = await supabase
+      const orgId = localStorage.getItem("manufacture_id") || localStorage.getItem("orgId");
+      if (!orgId) return;
+
+      const { data } = await supabase
         .from('Drug_batch')
         .select('*')
-        .select('*')
-        .eq('manufactured_by', localStorage.getItem("manufacture_id") || localStorage.getItem("orgId"))
+        .eq('manufactured_by', orgId)
         .order('created_on', { ascending: false });
 
-      if (data) {
-        setDrugs(data);
-      }
+      if (data) setDrugs(data);
     } catch (error) {
       console.error('Failed to load drugs:', error);
     }
@@ -71,139 +51,79 @@ const ManufacturerDashboard = () => {
   const checkStoredAuth = async () => {
     const storedKey = localStorage.getItem("privateKey");
     const storedOrgId = localStorage.getItem("manufacture_id") || localStorage.getItem("orgId");
+
     if (storedKey && storedOrgId) {
-      const verificationResult = await verifyManufacturer(storedOrgId, storedKey);
-      if (verificationResult) {
-        setPrivateKey(storedKey);
-        setPublicKey(verificationResult.publicKey);
-        setIsAuthenticated(true);
-      } else {
-        // Validation failed, but do NOT clear localStorage automatically.
-        // This allows the user to correct the issue or wait for verification without losing their keys.
-        console.warn("Stored credentials verification failed");
-        setIsAuthenticated(false);
-      }
+      const isValid = await verifyManufacturer(storedOrgId, storedKey);
+      if (isValid) setIsAuthenticated(true);
     }
   };
 
   const verifyManufacturer = async (manufacture_id, privateKey) => {
     try {
-      setLoading(true);
       const { data, error } = await supabase
         .from('Organization')
         .select('*')
         .eq('org_id', manufacture_id)
         .single();
 
-      if (error || !data) {
-        alert('Manufacturer ID not found in database');
-        return null;
-      }
-      console.log("Fetched organization data:", data);
-      if (!data.verified) {
-        setLoading(false);
-        alert('Your account is not verified yet. Please wait for the verification email.');
-        return;
-      }
-      if (!data.org_type.includes('Manufacturer')) {
-        setLoading(false);
-        alert('Organization is not registered as a manufacturer');
-        return;
-      }
+      if (error || !data) return false;
+      if (!data.verified || !data.org_type.includes('Manufacturer')) return false;
 
       const privateKeyHash = sha256(privateKey);
-      console.log("Computed private key hash:", privateKeyHash);
-
-      if (privateKeyHash === data.public_key) {
-        return { publicKey: data.public_key, orgId: manufacture_id };
-      } else {
-        alert('Private key does not match stored public key hash');
-        return null;
-      }
+      return privateKeyHash === data.public_key ? { publicKey: data.public_key } : false;
     } catch (error) {
-      console.error('Verification error:', error);
-      alert('Verification failed');
-      return null;
-    } finally {
-      setLoading(false);
+      console.error(error);
+      return false;
     }
   };
 
-
-
-  const handleSavePrivateKey = async () => {
+  const handleAuthenticate = async () => {
     if (!formData.manufacture_id || !formData.privkey) {
-      alert('Please enter both Manufacture ID and Private Key');
+      alert('Please enter both ID and Private Key');
       return;
     }
-
+    setAuthLoading(true);
     const result = await verifyManufacturer(formData.manufacture_id, formData.privkey);
+
     if (result) {
       localStorage.setItem("privateKey", formData.privkey);
       localStorage.setItem("manufacture_id", formData.manufacture_id);
       localStorage.setItem("publicKey", result.publicKey);
-
-      setPrivateKey(formData.privkey);
-      setPublicKey(result.publicKey);
       setIsAuthenticated(true);
-
-      setFormData({
-        ...formData,
-        privkey: "",
-        manufacture_id: "",
-      });
-
-      alert("Manufacturer authenticated successfully!");
+    } else {
+      alert("Authentication failed. Invalid ID or Key.");
     }
+    setAuthLoading(false);
   };
 
   const handleFormChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      [name]: value,
-    }));
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  // 🚀 NEW: Store in Drug_batch table
   const storeDrugInSupabase = async (blockchainDrugId, quantity = 1000) => {
-    try {// Generate UUID for batch_id
-
-      const { error } = await supabase
-        .from('Drug_batch')
-        .insert({
-          batch_id: blockchainDrugId,
-          created_on: new Date().toISOString(),
-          expiry_date: formData.expiryDate,
-          quantity: quantity,
-          status: "Manufactured",
-          manufactured_by: localStorage.getItem("orgId"),
-          drug_id: formData.drugId// Store blockchain drug ID
-        });
-
-      if (error) {
-        console.error('Supabase insert error:', error);
-        throw error;
-      }
-
-      console.log('✅ Drug stored in Drug_batch:', blockchainDrugId);
-      return blockchainDrugId;
-    } catch (error) {
-      console.error('Failed to store in Supabase:', error);
-      throw error;
-    }
+    const { error } = await supabase.from('Drug_batch').insert({
+      batch_id: blockchainDrugId,
+      created_on: new Date().toISOString(),
+      expiry_date: formData.expiryDate,
+      quantity: quantity,
+      status: "Manufactured",
+      manufactured_by: localStorage.getItem("orgId") || localStorage.getItem("manufacture_id"),
+      drug_id: formData.drugId
+    });
+    if (error) throw error;
   };
 
   const handleUpload = async () => {
     try {
+      setLoading(true);
       const publickey = localStorage.getItem("publicKey");
-      if (!publickey) {
-        alert("Please authenticate first");
-        return;
-      }
+      const orgId = localStorage.getItem("manufacture_id") || localStorage.getItem("orgId");
 
-      // 1. Generate blockchain drug ID
-      const response = await fetch("http://localhost:5000/genId", {
+      if (!publickey) { alert("Please authenticate first"); return; }
+
+      // 1. Generate ID (Mocking backend call based on existing logic)
+      const genResponse = await fetch("http://localhost:5000/genId", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -215,246 +135,253 @@ const ManufacturerDashboard = () => {
         }),
       });
 
-      const result = await response.json();
-      if (!response.ok) {
-        alert("Failed to generate Drug ID: " + (result.error || "Unknown error"));
-        return;
-      }
+      const genResult = await genResponse.json();
+      if (!genResponse.ok) throw new Error(genResult.error || "Failed to generate ID");
 
-      const blockchainDrugId = result.drug_id;
-      const resp = await fetch("http://localhost:5000/add", {
+      const blockchainDrugId = genResult.drug_id;
+
+      // 2. Add Transaction
+      const addResponse = await fetch("http://localhost:5000/add", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           drug_id: blockchainDrugId,
           batch: formData.drugId,
-          sender: localStorage.getItem("orgId"),
+          sender: orgId,
           receiver: "Supply Chain",
           status: "manufactured",
           location: "Unknown",
         }),
       });
-      if (response.ok) {
-        setFormData({
-          drugId: "",
-          drugName: "",
-          batchNumber: "",
-          manufacturingDate: "",
-          expiryDate: "",
-        });
-      } else {
-        alert("Failed to add transaction");
-      }
-      // 2. Store in Supabase Drug_batch table
+
+      if (!addResponse.ok) throw new Error("Failed to add transaction to blockchain");
+
+      // 3. Store in Supabase
       await storeDrugInSupabase(blockchainDrugId);
 
-      // 3. Refresh drugs list
+      // 4. Update UI
       await loadDrugsFromDB();
-
-      // 4. Reset form
-      setFormData({
-        drugId: "",
-        drugName: "",
-        batchNumber: "",
-        manufacturingDate: "",
-        expiryDate: "",
-      });
-
-      alert(`✅ Drug batch created!\nBatch ID: ${blockchainDrugId}\nStatus: Manufactured`);
+      setFormData({ ...formData, drugId: "", batchNumber: "", manufacturingDate: "", expiryDate: "" });
+      alert(`✅ Batch Created Successfully!\nBatch ID: ${blockchainDrugId}`);
 
     } catch (error) {
-      console.error("Upload error:", error);
-      alert("Upload failed: " + error.message);
+      console.error("Upload Error:", error);
+      alert(`Failed: ${error.message}`);
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleLogout = () => {
     localStorage.clear();
-    setPrivateKey("");
-    setPublicKey("");
     setIsAuthenticated(false);
     setDrugs([]);
   };
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-blue-500 to-purple-600">
-        <div className="text-white text-xl">Verifying manufacturer...</div>
-      </div>
-    );
-  }
-
   return (
-    <div className="bg-gradient-to-r from-blue-500 to-purple-600 flex flex-col min-h-screen">
+    <div className="min-h-screen bg-med-cream font-sans">
       <ManuNav />
 
-      {isAuthenticated ? (
-        <div className="flex flex-col items-center p-20 flex-grow">
-          {/* Auth Status */}
-          <div className="w-full max-w-md bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6">
-            <div className="flex justify-between items-center">
-              <span>✅ Authenticated: {localStorage.getItem("manufacture_id") || localStorage.getItem("orgId")}</span>
-              <button onClick={handleLogout} className="text-sm underline hover:text-green-900">
-                Logout
-              </button>
-            </div>
-          </div>
+      <div className="pt-24 pb-12 px-4 md:px-8 max-w-7xl mx-auto">
 
-          {/* Upload Form */}
-          <div className="w-full max-w-md p-6 bg-white rounded-lg shadow-lg mb-8">
-            <h2 className="text-2xl font-bold text-center text-purple-600 mb-6">
-              Create New Drug Batch
-            </h2>
-            <div className="space-y-4">
-              <div>
-                <h3 className="text-sm font-semibold text-gray-700">Drug ID</h3>
-                <input
-                  type="text"
-                  placeholder="Enter Drug ID"
-                  name="drugId"
-                  value={formData.drugId}
-                  onChange={handleFormChange}
-                  className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-600"
-                  required
-                />
-              </div>
-              <div>
-                <h3 className="text-sm font-semibold text-gray-700">Batch Number</h3>
-                <input
-                  type="text"
-                  placeholder="Enter Batch Number"
-                  name="batchNumber"
-                  value={formData.batchNumber}
-                  onChange={handleFormChange}
-                  className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-600"
-                  required
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
+        {!isAuthenticated ? (
+          <div className="flex flex-col items-center justify-center min-h-[60vh]">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="w-full max-w-md bg-white p-8 rounded-3xl shadow-xl border border-gray-100"
+            >
+              <h2 className="text-3xl font-serif text-med-teal text-center mb-2">Manufacturer Portal</h2>
+              <p className="text-center text-gray-500 mb-8">Authenticate with your secure credentials</p>
+
+              <div className="space-y-5">
                 <div>
-                  <h3 className="text-sm font-semibold text-gray-700">Manufacturing Date</h3>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Organization ID</label>
                   <input
-                    type="date"
-                    name="manufacturingDate"
-                    value={formData.manufacturingDate}
+                    type="text"
+                    name="manufacture_id"
+                    value={formData.manufacture_id}
                     onChange={handleFormChange}
-                    className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-600"
-                    required
+                    placeholder="Enter Org ID"
+                    className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-med-teal focus:border-med-teal outline-none transition-all"
                   />
                 </div>
                 <div>
-                  <h3 className="text-sm font-semibold text-gray-700">Expiry Date</h3>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Private Key</label>
                   <input
-                    type="date"
-                    name="expiryDate"
-                    value={formData.expiryDate}
+                    type="password"
+                    name="privkey"
+                    value={formData.privkey}
                     onChange={handleFormChange}
-                    className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-600"
-                    required
+                    placeholder="Enter Private Key"
+                    className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-med-teal focus:border-med-teal outline-none transition-all"
                   />
                 </div>
+                <button
+                  onClick={handleAuthenticate}
+                  disabled={authLoading}
+                  className="w-full py-3 bg-med-teal text-white font-semibold rounded-xl hover:bg-med-teal/90 transition-all shadow-md disabled:opacity-70"
+                >
+                  {authLoading ? 'Verifying Credentials...' : 'Access Dashboard'}
+                </button>
               </div>
-              <button
-                onClick={handleUpload}
-                className="w-full py-3 bg-purple-600 text-white font-semibold rounded-md hover:bg-purple-700 transition"
-              >
-                🚀 Create & Store Batch
-              </button>
-            </div>
+            </motion.div>
           </div>
+        ) : (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
-          {/* Drug Batches List */}
-          <div className="w-full max-w-4xl p-6 bg-white rounded-lg shadow-lg">
-            <h3 className="text-xl font-semibold text-center text-purple-600 mb-6">
-              Drug Batches ({drugs.length})
-            </h3>
-            {drugs.length === 0 ? (
-              <p className="text-center text-gray-500 py-8">No batches created yet.</p>
-            ) : (
-              drugs.map((drug) => (
-                <div key={drug.batch_id} className="border-b pb-6 mb-6 last:border-b-0">
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-4">
-                    <div>
-                      <p className="text-gray-700 mb-1"><strong>Batch ID:</strong></p>
-                      <p className="font-mono text-sm bg-blue-50 p-3 w-128 rounded-lg">{drug.batch_id}</p>
+            {/* Left Column: Create Form */}
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="lg:col-span-1 space-y-6"
+            >
+              <div className="bg-white p-6 rounded-3xl shadow-lg border border-gray-100">
+                <div className="flex items-center space-x-3 mb-6">
+                  <div className="p-3 bg-med-teal-light rounded-xl text-med-teal">
+                    <Plus size={24} />
+                  </div>
+                  <h2 className="text-2xl font-serif text-med-teal">New Batch</h2>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="space-y-1">
+                    <label className="text-sm font-medium text-gray-600">Drug Name / ID</label>
+                    <input
+                      name="drugId"
+                      value={formData.drugId}
+                      onChange={handleFormChange}
+                      placeholder="e.g. Paracetamol-500"
+                      className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-med-teal outline-none"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-sm font-medium text-gray-600">Batch Number</label>
+                    <input
+                      name="batchNumber"
+                      value={formData.batchNumber}
+                      onChange={handleFormChange}
+                      placeholder="e.g. BATCH-2024-001"
+                      className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-med-teal outline-none"
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-1">
+                      <label className="text-sm font-medium text-gray-600">Mfg Date</label>
+                      <input
+                        type="date"
+                        name="manufacturingDate"
+                        value={formData.manufacturingDate}
+                        onChange={handleFormChange}
+                        className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-med-teal outline-none text-sm"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-sm font-medium text-gray-600">Exp Date</label>
+                      <input
+                        type="date"
+                        name="expiryDate"
+                        value={formData.expiryDate}
+                        onChange={handleFormChange}
+                        className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-med-teal outline-none text-sm"
+                      />
                     </div>
                   </div>
-                  <div className="grid grid-cols-2 gap-4 mb-4">
-                    <div>
-                      <p><strong>Quantity:</strong> {drug.quantity}</p>
-                      <p><strong>Created:</strong> {new Date(drug.created_on).toLocaleDateString()}</p>
-                    </div>
-                    <div>
-                      <p><strong>Status:</strong>
-                        <span className={`ml-2 px-3 py-1 rounded-full text-xs font-semibold ${drug.status === 'Manufactured'
-                          ? 'bg-green-100 text-green-800'
-                          : 'bg-gray-100 text-gray-800'
-                          }`}>
-                          {drug.status}
-                        </span>
-                      </p>
-                      <p><strong>Expiry:</strong> {drug.expiry_date}</p>
-                    </div>
-                  </div>
-                  <div className="flex justify-center">
-                    <QRCode value={drug.batch_id} size={140} />
+
+                  <button
+                    onClick={handleUpload}
+                    disabled={loading}
+                    className="w-full py-4 mt-2 bg-med-teal text-white font-bold rounded-xl hover:bg-med-teal/90 transition-all shadow-md flex items-center justify-center space-x-2 disabled:opacity-70"
+                  >
+                    {loading ? (
+                      <span>Processing...</span>
+                    ) : (
+                      <>
+                        <Package size={20} />
+                        <span>Create Batch</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              {/* Auth Status Card */}
+              <div className="bg-white p-4 rounded-2xl shadow-sm border border-green-100 bg-green-50/50 flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <CheckCircle className="text-green-600" size={20} />
+                  <div>
+                    <p className="text-sm font-semibold text-green-800">Authenticated</p>
+                    <p className="text-xs text-green-600 font-mono truncate w-32">
+                      {localStorage.getItem("manufacture_id")?.substring(0, 12)}...
+                    </p>
                   </div>
                 </div>
-              ))
-            )}
-          </div>
-        </div>
-      ) : (
-        // Login form (unchanged)
-        <div className="flex flex-col items-center justify-center min-h-[70vh] p-6">
-          {/* ... your existing login form ... */}
-          <div className="w-full max-w-md p-8 bg-white rounded-lg shadow-xl">
-            <h2 className="text-3xl font-bold text-center text-purple-600 mb-8">
-              Manufacturer Login
-            </h2>
-            <div className="space-y-6">
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Organisation ID
-                </label>
-                <input
-                  type="text"
-                  placeholder="Enter your org_id from database"
-                  name="manufacture_id"
-                  value={formData.manufacture_id}
-                  onChange={handleFormChange}
-                  className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent placeholder:text-gray-400"
-                />
+                <button onClick={handleLogout} className="text-xs font-semibold text-green-700 hover:underline">
+                  Logout
+                </button>
               </div>
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Private Key
-                </label>
-                <input
-                  type="password"
-                  name="privkey"
-                  value={formData.privkey}
-                  onChange={handleFormChange}
-                  placeholder="Enter your private key (64 hex chars)"
-                  className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent placeholder:text-gray-400"
-                />
+            </motion.div>
+
+            {/* Right Column: List */}
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="lg:col-span-2"
+            >
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl font-serif text-med-teal">Recent Batches</h2>
+                <span className="px-4 py-1 bg-med-teal-light text-med-teal rounded-full text-sm font-semibold">
+                  {drugs.length} Total
+                </span>
               </div>
-              <button
-                onClick={handleSavePrivateKey}
-                disabled={loading}
-                className="w-full py-4 bg-purple-600 text-white font-bold rounded-lg hover:bg-purple-700 transition disabled:opacity-50"
-              >
-                {loading ? 'Verifying...' : 'Authenticate'}
-              </button>
-            </div>
-            <p className="text-xs text-gray-500 text-center mt-4">
-              Your private key will be SHA256 hashed and compared with stored public_key
-            </p>
+
+              <div className="space-y-4">
+                {drugs.length === 0 ? (
+                  <div className="text-center py-12 bg-white rounded-3xl border border-dashed border-gray-300">
+                    <Package className="mx-auto text-gray-300 mb-4" size={48} />
+                    <p className="text-gray-500">No active batches found.</p>
+                  </div>
+                ) : (
+                  drugs.map((drug) => (
+                    <div key={drug.batch_id} className="bg-white p-6 rounded-2xl shadow-sm hover:shadow-md transition-shadow border border-gray-100 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-3 mb-2">
+                          <span className="px-3 py-1 bg-green-100 text-green-700 text-xs font-bold rounded-full uppercase tracking-wide">
+                            {drug.status}
+                          </span>
+                          <span className="text-xs text-gray-400 font-mono">
+                            {new Date(drug.created_on).toLocaleDateString()}
+                          </span>
+                        </div>
+                        <h3 className="text-lg font-bold text-gray-800 mb-1">
+                          {drug.drug_id || "Unknown Drug"}
+                        </h3>
+                        <p className="text-xs text-gray-500 font-mono bg-gray-50 p-1.5 rounded inline-block">
+                          ID: {drug.batch_id}
+                        </p>
+                        <div className="flex space-x-6 mt-3 text-sm text-gray-600">
+                          <div className="flex items-center space-x-1">
+                            <Package size={14} />
+                            <span>Qty: {drug.quantity}</span>
+                          </div>
+                          <div className="flex items-center space-x-1">
+                            <Calendar size={14} />
+                            <span>Exp: {drug.expiry_date}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="p-2 bg-white border border-gray-200 rounded-xl">
+                        <QRCode value={drug.batch_id} size={80} level="M" />
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </motion.div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };

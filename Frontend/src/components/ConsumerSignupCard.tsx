@@ -30,41 +30,28 @@ const ConsumerSignupCard: React.FC = () => {
         setLoading(true);
 
         try {
-            // Supabase Auth signup
             const { data: authData, error: authError } = await supabase.auth.signUp({
                 email: formData.email,
                 password: formData.password,
             });
 
-            if (authError) {
-                console.error('Auth error:', authError);
-                alert(authError.message);
-                throw authError;
-            }
+            if (authError) throw authError;
 
-            // Insert into Customer table (matches schema exactly)
             const { error: customerError } = await supabase
                 .from('Customer')
                 .insert({
                     email: formData.email,
-                    Name: formData.name,       // case-sensitive
+                    Name: formData.name,
                     username: formData.username,
-                    Password: formData.password // stored because schema requires it
+                    Password: formData.password
                 });
 
             if (customerError) throw customerError;
-
             setSuccess(true);
 
-            alert(
-                `✅ Account created successfully!\n\n` +
-                `Welcome, ${formData.name}!\n` +
-                `📧 Verification email sent to ${formData.email}.\n\n` +
-                `Please check your email and verify your account.`
-            );
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error:', error);
-            alert('Failed to create account. Please try again.');
+            alert(error.message || 'Failed to create account.');
         } finally {
             setLoading(false);
         }
@@ -72,116 +59,85 @@ const ConsumerSignupCard: React.FC = () => {
 
     if (success) {
         return (
-            <div className="flex-grow flex items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900">
-                <div className="text-center p-8 bg-white border border-gray-200 rounded-lg shadow-lg dark:bg-gray-800">
-                    <h2 className="text-2xl font-bold text-green-600 mb-4">
-                        ✅ Registration Successful!
-                    </h2>
-                    <p className="text-gray-700 dark:text-gray-300 mb-6">
-                        Check your email for verification. You can now sign in.
-                    </p>
-                    <a
-                        href="/signin/consumer"
-                        className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-6 rounded-lg"
-                    >
-                        Go to Sign In
-                    </a>
-                </div>
+            <div className="text-center p-8 bg-green-50 border border-green-200 rounded-xl">
+                <h2 className="text-2xl font-serif text-med-teal mb-4">Registration Successful!</h2>
+                <p className="text-gray-700 mb-6 font-sans">
+                    Please check your email to verify your account.
+                </p>
+                <a
+                    href="/signin/consumer"
+                    className="inline-block bg-med-teal hover:bg-med-teal/90 text-white font-semibold py-3 px-8 rounded-full transition-all"
+                >
+                    Sign In Now
+                </a>
             </div>
         );
     }
 
     return (
-        <div className="flex-grow flex items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900">
-            <div className="w-full max-w-md p-6 bg-white border border-gray-200 rounded-lg shadow-lg dark:bg-gray-800 dark:border-gray-700">
-                <div className="flex items-center justify-center mb-6">
-                    <span className="ml-4 text-3xl font-montserrat font-bold text-purple-600">
-                        MED CHAIN
-                    </span>
+        <div className="w-full">
+            <div className="text-center mb-10">
+                <h2 className="text-3xl font-serif text-med-teal mb-2">Create Account</h2>
+                <p className="text-gray-500">Sign up to verify your medication.</p>
+            </div>
+
+            <form onSubmit={handleSubmit} className="space-y-5">
+                <div className="space-y-1">
+                    <label className="block text-sm font-medium text-gray-700">Username</label>
+                    <input
+                        type="text"
+                        name="username"
+                        required
+                        value={formData.username}
+                        onChange={handleChange}
+                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-med-teal focus:border-med-teal outline-none transition-all"
+                    />
                 </div>
 
-                <h2 className="text-center text-2xl font-bold text-gray-800 dark:text-white mb-4">
-                    Consumer Signup
-                </h2>
+                <div className="space-y-1">
+                    <label className="block text-sm font-medium text-gray-700">Full Name</label>
+                    <input
+                        type="text"
+                        name="name"
+                        required
+                        value={formData.name}
+                        onChange={handleChange}
+                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-med-teal focus:border-med-teal outline-none transition-all"
+                    />
+                </div>
 
-                <form onSubmit={handleSubmit}>
-                    <div className="mb-4">
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                            Username
-                        </label>
-                        <input
-                            type="text"
-                            name="username"
-                            required
-                            value={formData.username}
-                            onChange={handleChange}
-                            className="mt-1 block w-full p-2.5 border border-gray-300 rounded-lg shadow-sm
-                                       text-black
-                                       focus:ring-primary focus:border-primary
-                                       dark:bg-gray-700 dark:border-gray-600"
-                        />
-                    </div>
+                <div className="space-y-1">
+                    <label className="block text-sm font-medium text-gray-700">Email Address</label>
+                    <input
+                        type="email"
+                        name="email"
+                        required
+                        value={formData.email}
+                        onChange={handleChange}
+                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-med-teal focus:border-med-teal outline-none transition-all"
+                    />
+                </div>
 
-                    <div className="mb-4">
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                            Full Name
-                        </label>
-                        <input
-                            type="text"
-                            name="name"
-                            required
-                            value={formData.name}
-                            onChange={handleChange}
-                            className="mt-1 block w-full p-2.5 border border-gray-300 rounded-lg shadow-sm
-                                       text-black
-                                       focus:ring-primary focus:border-primary
-                                       dark:bg-gray-700 dark:border-gray-600"
-                        />
-                    </div>
+                <div className="space-y-1">
+                    <label className="block text-sm font-medium text-gray-700">Password</label>
+                    <input
+                        type="password"
+                        name="password"
+                        required
+                        value={formData.password}
+                        onChange={handleChange}
+                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-med-teal focus:border-med-teal outline-none transition-all"
+                    />
+                </div>
 
-                    <div className="mb-4">
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                            Email
-                        </label>
-                        <input
-                            type="email"
-                            name="email"
-                            required
-                            value={formData.email}
-                            onChange={handleChange}
-                            className="mt-1 block w-full p-2.5 border border-gray-300 rounded-lg shadow-sm
-                                       text-black
-                                       focus:ring-primary focus:border-primary
-                                       dark:bg-gray-700 dark:border-gray-600"
-                        />
-                    </div>
-
-                    <div className="mb-6">
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                            Password
-                        </label>
-                        <input
-                            type="password"
-                            name="password"
-                            required
-                            value={formData.password}
-                            onChange={handleChange}
-                            className="mt-1 block w-full p-2.5 border border-gray-300 rounded-lg shadow-sm
-                                       text-black
-                                       focus:ring-primary focus:border-primary
-                                       dark:bg-gray-700 dark:border-gray-600"
-                        />
-                    </div>
-
-                    <button
-                        type="submit"
-                        disabled={loading}
-                        className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-lg shadow-md disabled:opacity-50"
-                    >
-                        {loading ? 'Signing Up...' : 'Sign Up'}
-                    </button>
-                </form>
-            </div>
+                <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full bg-med-teal hover:bg-med-teal/90 disabled:bg-gray-400 text-white font-bold py-4 rounded-full shadow-lg transition-all transform hover:scale-[1.01]"
+                >
+                    {loading ? 'Creating Account...' : 'Sign Up'}
+                </button>
+            </form>
         </div>
     );
 };

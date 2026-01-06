@@ -1,74 +1,112 @@
-import React, { useState } from "react";
-import { LogOut, Menu } from "lucide-react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
+import { Menu, X, Plus, Activity, List, LogOut } from "lucide-react";
 
 const ManuNav = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const location = useLocation();
 
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
+  const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
+
+  const navLinks = [
+    { name: "Add Batch", path: "/manufacturer", icon: <Plus size={18} /> },
+    { name: "Track", path: "/manufacturer/track", icon: <Activity size={18} /> },
+    { name: "View All", path: "/manufacturer/view", icon: <List size={18} /> },
+  ];
 
   return (
-    <div className="absolute w-full flex justify-center mt-4 z-100">
-      <nav className="bg-gray-800 p-4 shadow-lg w-[70%] h-15 rounded-full text-white font-bold">
-        <div className="flex items-center justify-between">
-          {/* Logo */}
-          <div className="text-2xl font-semibold text-white">
-            <Link to="/">MedChain</Link>
-          </div>
+    <motion.div
+      initial={{ y: -100 }}
+      animate={{ y: 0 }}
+      className="fixed top-0 w-full z-50 px-4 py-4"
+    >
+      <nav className="mx-auto max-w-5xl bg-med-teal/95 backdrop-blur-md rounded-full shadow-lg px-6 py-3 flex justify-between items-center text-white">
+        {/* Logo */}
+        <Link to="/" className="text-xl font-serif font-bold tracking-tight hover:text-med-teal-light transition-colors">
+          MedChain <span className="text-med-teal-light font-sans text-xs font-normal ml-1">MANUFACTURER</span>
+        </Link>
 
-          {/* Menu Items (Desktop) */}
-          <ul className="hidden md:flex space-x-8 text-white">
-            <li>
-              <Link to="/" className="hover:text-blue-400">Home</Link>
-            </li>
-            <li>
-              <Link to="/manufacturer" className="hover:text-blue-400">Add</Link>
-            </li>
-            <li>
-              <Link to="/manufacturer/track" className="hover:text-blue-400">Track</Link>
-            </li>
-            <li>
-              <Link to="/manufacturer/view" className="hover:text-blue-400">View</Link>
-            </li>
-            <li>
-              <Link to="/signin" className="hover:text-blue-400">
-                <LogOut />
-              </Link>
-            </li>
-          </ul>
+        {/* Desktop Menu */}
+        <ul className="hidden md:flex items-center space-x-1">
+          {navLinks.map((link) => {
+            const isActive = location.pathname === link.path;
+            return (
+              <li key={link.name}>
+                <Link
+                  to={link.path}
+                  className={`flex items-center space-x-2 px-4 py-2 rounded-full transition-all duration-300 ${isActive
+                      ? "bg-white text-med-teal font-semibold shadow-md"
+                      : "hover:bg-white/10 text-white/90"
+                    }`}
+                >
+                  {link.icon}
+                  <span>{link.name}</span>
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
 
-          {/* Hamburger Icon (Mobile) */}
-          <div className="md:hidden flex items-center">
-            <button onClick={toggleMenu} className="text-white">
-              <Menu size={24} />
-            </button>
-          </div>
+        {/* Logout */}
+        <div className="hidden md:block pl-4 border-l border-white/20 ml-4">
+          <Link
+            to="/signin"
+            onClick={() => localStorage.clear()}
+            className="flex items-center space-x-2 text-white/80 hover:text-white transition-colors"
+            title="Logout"
+          >
+            <LogOut size={20} />
+          </Link>
         </div>
 
-        {/* Mobile Menu */}
-        <div className={`${isMenuOpen ? "block" : "hidden"} md:hidden mt-4 bg-gray-700 p-4 space-y-4 rounded-lg`}>
-          <ul>
-            <li>
-              <Link to="/" className="block py-2 px-4 hover:bg-gray-600 text-white">Home</Link>
-            </li>
-            <li>
-              <Link to="/manufacturer" className="block py-2 px-4 hover:bg-gray-600 text-white">Add</Link>
-            </li>
-            <li>
-              <Link to="/manufacturer/track" className="block py-2 px-4 hover:bg-gray-600 text-white">Track</Link>
-            </li>
-            <li>
-              <Link to="/manufacturer/view" className="block py-2 px-4 hover:bg-gray-600 text-white">View</Link>
-            </li>
-            <li>
-              <Link to="/signin" className="block py-2 px-4 hover:bg-gray-600 text-white">Logout</Link>
-            </li>
-          </ul>
-        </div>
+        {/* Mobile Toggle */}
+        <button onClick={toggleMenu} className="md:hidden text-white p-1">
+          {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+        </button>
       </nav>
-    </div>
+
+      {/* Mobile Menu */}
+      <AnimatePresence>
+        {isMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: -20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: -20 }}
+            className="absolute top-20 left-4 right-4 bg-white rounded-2xl shadow-xl overflow-hidden md:hidden"
+          >
+            <ul className="flex flex-col p-4 space-y-2">
+              {navLinks.map((link) => (
+                <li key={link.name}>
+                  <Link
+                    to={link.path}
+                    onClick={() => setIsMenuOpen(false)}
+                    className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition-colors ${location.pathname === link.path
+                        ? "bg-med-teal text-white"
+                        : "text-gray-600 hover:bg-gray-50"
+                      }`}
+                  >
+                    {link.icon}
+                    <span className="font-medium">{link.name}</span>
+                  </Link>
+                </li>
+              ))}
+              <hr className="border-gray-100 my-2" />
+              <li>
+                <Link
+                  to="/signin"
+                  onClick={() => { setIsMenuOpen(false); localStorage.clear(); }}
+                  className="flex items-center space-x-3 px-4 py-3 rounded-xl text-red-600 hover:bg-red-50"
+                >
+                  <LogOut size={18} />
+                  <span className="font-medium">Logout</span>
+                </Link>
+              </li>
+            </ul>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
   );
 };
 

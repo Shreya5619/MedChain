@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { supabase } from '../supabaseClient';
 import { useNavigate } from 'react-router-dom';
+import { LogIn } from 'lucide-react';
 
 interface SigninFormData {
     identifier: string; // username OR email
@@ -58,24 +59,27 @@ const ConsumerSigninCard: React.FC = () => {
     };
 
     return (
-        <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-purple-400 to-purple-600">
-            <div className="w-full max-w-md p-8 bg-white rounded-lg shadow-lg">
-                <h2 className="text-2xl font-bold text-center text-purple-600 mb-6">
-                    Consumer Login
-                </h2>
+        <div className="w-full">
+            <div className="text-center mb-10">
+                <h2 className="text-3xl font-serif text-med-teal mb-2">Welcome Back</h2>
+                <p className="text-gray-500">Sign in to track your medications.</p>
+            </div>
 
-                <form onSubmit={handleSubmit}>
-                    <label className="block mb-1 font-semibold text-gray-700">Username or Email</label>
+            <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="space-y-1">
+                    <label className="block text-sm font-medium text-gray-700">Username or Email</label>
                     <input
                         name="identifier"
-                        placeholder="Enter your username or email"
+                        placeholder="e.g. johndoe or john@example.com"
                         required
                         value={formData.identifier}
                         onChange={handleChange}
-                        className="w-full mb-4 p-3 border rounded focus:outline-none focus:ring-2 focus:ring-purple-400"
+                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-med-teal focus:border-med-teal outline-none transition-all"
                     />
+                </div>
 
-                    <label className="block mb-1 font-semibold text-gray-700">Password</label>
+                <div className="space-y-1">
+                    <label className="block text-sm font-medium text-gray-700">Password</label>
                     <input
                         type="password"
                         name="password"
@@ -83,17 +87,33 @@ const ConsumerSigninCard: React.FC = () => {
                         required
                         value={formData.password}
                         onChange={handleChange}
-                        className="w-full mb-6 p-3 border rounded focus:outline-none focus:ring-2 focus:ring-purple-400"
+                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-med-teal focus:border-med-teal outline-none transition-all"
                     />
+                </div>
 
-                    <button
-                        type="submit"
-                        disabled={loading}
-                        className="w-full bg-purple-600 text-white py-3 rounded font-semibold hover:bg-purple-700 transition-colors"
-                    >
-                        {loading ? 'Signing In...' : 'Sign In'}
-                    </button>
-                </form>
+                <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full py-4 bg-med-teal text-white font-bold rounded-full hover:bg-med-teal/90 transition-all shadow-md flex items-center justify-center space-x-2 disabled:opacity-70"
+                >
+                    {loading ? (
+                        <span>Signing In...</span>
+                    ) : (
+                        <>
+                            <span>Sign In</span>
+                            <LogIn size={20} />
+                        </>
+                    )}
+                </button>
+            </form>
+
+            <div className="mt-6 text-center">
+                <p className="text-sm text-gray-500">
+                    Don't have an account?{' '}
+                    <a href="/signup/consumer" className="text-med-teal font-semibold hover:underline">
+                        Sign up
+                    </a>
+                </p>
             </div>
         </div>
     );

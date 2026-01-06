@@ -3,7 +3,6 @@ import { createClient } from '@supabase/supabase-js';
 import { v4 as uuidv4 } from 'uuid';
 import { sha256 } from 'js-sha256';
 
-// Supabase client
 const supabase = createClient(
   import.meta.env.VITE_SUPABASE_URL || 'YOUR_SUPABASE_URL',
   import.meta.env.VITE_SUPABASE_ANON_KEY || 'YOUR_SUPABASE_ANON_KEY'
@@ -12,11 +11,11 @@ const supabase = createClient(
 interface LicenseFormData {
   name: string;
   email: string;
-  wholesaleLicense: string;          // Wholesale Distributor License
-  distributionAuth: string;          // Drug Distribution Authorization
-  pharmaDealerLicense: string;       // Pharmaceutical Dealer License
-  importExportLicense: string;       // Drug Import/Export License
-  complianceDoc: string;             // Compliance with Storage/Handling Regulations
+  wholesaleLicense: string;
+  distributionAuth: string;
+  pharmaDealerLicense: string;
+  importExportLicense: string;
+  complianceDoc: string;
 }
 
 const InterCard: React.FC = () => {
@@ -46,6 +45,7 @@ const InterCard: React.FC = () => {
     return { privateKey, publicKey };
   };
 
+  const [success, setSuccess] = useState(false);
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -53,7 +53,6 @@ const InterCard: React.FC = () => {
     try {
       const id = uuidv4();
       const { privateKey, publicKey } = generateKeyPair();
-
 
       const { error: orgError } = await supabase
         .from('Organization')
@@ -63,8 +62,6 @@ const InterCard: React.FC = () => {
           name: formData.name,
           email: formData.email,
           public_key: publicKey,
-          // created_at will be default now()
-          // verified will be default null
         });
 
       if (orgError) throw orgError;
@@ -80,208 +77,144 @@ const InterCard: React.FC = () => {
         });
 
       if (interror) throw interror;
-
+      setSuccess(true);
       localStorage.setItem('intermediaryId', id);
       localStorage.setItem('intermediaryPrivateKey', privateKey);
       localStorage.setItem('intermediaryPublicKey', publicKey);
 
       alert(
-        `✅ Intermediary account created!\n\n` +
-        `ID: ${id}\n` +
+        `✅ Account created successfully!\n\n` +
+        `Org ID: ${id}\n` +
         `Private Key: ${privateKey}\n` +
         `Public Key: ${publicKey}\n\n` +
-        `⚠️ Please store these keys safely. They will not be shown again.\n\n` +
-        `📧 You will receive an email once your account is verified.`
+        `⚠️  SAVE THESE KEYS SAFELY - THEY WON'T BE SHOWN AGAIN!\n\n` +
+        `📧 Verification email will be sent to ${formData.email} shortly.`
       );
+
     } catch (err) {
       console.error(err);
-      alert('Failed to create intermediary account. Try again.');
+      alert('Failed to create account. Try again.');
     } finally {
       setLoading(false);
     }
   };
-
+  if (success) {
+    return (
+      <div className="text-center p-8 bg-green-50 border border-green-200 rounded-xl">
+        <h2 className="text-2xl font-serif text-med-teal mb-4">Registration Successful!</h2>
+        <p className="text-gray-700 mb-6 font-sans">
+          Check your email for verification. Your keys are saved in localStorage.
+        </p>
+        <button
+          onClick={() => window.location.reload()}
+          className="bg-med-teal hover:bg-med-teal/90 text-white font-semibold py-3 px-8 rounded-full transition-all"
+        >
+          Register Another
+        </button>
+      </div>
+    );
+  }
   return (
-    <div className="flex-grow flex items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900">
-      <div className="w-full max-w-md p-6 bg-white border border-gray-200 rounded-lg shadow-lg dark:bg-gray-800 dark:border-gray-700">
-        <div className="flex items-center justify-center mb-6">
-          <span className="ml-4 text-3xl font-montserrat font-bold text-purple-600">MED CHAIN</span>
+    <div className="w-full">
+      <div className="text-center mb-10">
+        <h2 className="text-3xl font-serif text-med-teal mb-2">Intermediary Registration</h2>
+        <p className="text-gray-500">Join the distribution network.</p>
+      </div>
+
+      <form onSubmit={handleSubmit} className="space-y-5">
+        <div className="space-y-1">
+          <label className="block text-sm font-medium text-gray-700">Company Name</label>
+          <input
+            type="text"
+            name="name"
+            required
+            value={formData.name}
+            onChange={handleChange}
+            placeholder="e.g. FastTrack Logistics"
+            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-med-teal focus:border-med-teal outline-none transition-all"
+          />
         </div>
 
-        <h2 className="text-center text-2xl font-bold text-gray-800 dark:text-white mb-4">
-          Intermediary License Form
-        </h2>
+        <div className="space-y-1">
+          <label className="block text-sm font-medium text-gray-700">Email Address</label>
+          <input
+            type="email"
+            name="email"
+            required
+            value={formData.email}
+            onChange={handleChange}
+            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-med-teal focus:border-med-teal outline-none transition-all"
+          />
+        </div>
 
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label
-              htmlFor="name"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-            >
-              Name
-            </label>
-            <input
-              type="name"
-              id="name"
-              name="name"
-              placeholder="Enter your Name"
-              required
-              value={formData.name}
-              onChange={handleChange}
-              className="mt-1 block w-full p-2.5 border border-gray-300 rounded-lg shadow-sm
-                         bg-white text-gray-900
-                         dark:bg-gray-700 dark:border-gray-600 dark:text-white
-                         focus:ring-purple-500 focus:border-purple-500"
-            />
-          </div>
-          {/* Email */}
-          <div className="mb-4">
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-            >
-              Email
-            </label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              placeholder="Enter your Email"
-              required
-              value={formData.email}
-              onChange={handleChange}
-              className="mt-1 block w-full p-2.5 border border-gray-300 rounded-lg shadow-sm
-                         bg-white text-gray-900
-                         dark:bg-gray-700 dark:border-gray-600 dark:text-white
-                         focus:ring-purple-500 focus:border-purple-500"
-            />
-          </div>
-
-          {/* Wholesale Distributor License */}
-          <div className="mb-4">
-            <label
-              htmlFor="wholesaleLicense"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-            >
-              Wholesale Distributor License
-            </label>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-1">
+            <label className="block text-sm font-medium text-gray-700">Wholesale License</label>
             <input
               type="text"
-              id="wholesaleLicense"
               name="wholesaleLicense"
-              placeholder="Enter Wholesale Distributor License Number"
               required
               value={formData.wholesaleLicense}
               onChange={handleChange}
-              className="mt-1 block w-full p-2.5 border border-gray-300 rounded-lg shadow-sm
-                         bg-white text-gray-900
-                         dark:bg-gray-700 dark:border-gray-600 dark:text-white
-                         focus:ring-purple-500 focus:border-purple-500"
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-med-teal focus:border-med-teal outline-none transition-all"
             />
           </div>
-
-          {/* Drug Distribution Authorization */}
-          <div className="mb-4">
-            <label
-              htmlFor="distributionAuth"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-            >
-              Drug Distribution Authorization
-            </label>
+          <div className="space-y-1">
+            <label className="block text-sm font-medium text-gray-700">Distribution Auth</label>
             <input
               type="text"
-              id="distributionAuth"
               name="distributionAuth"
-              placeholder="Enter Drug Distribution Authorization Number"
               required
               value={formData.distributionAuth}
               onChange={handleChange}
-              className="mt-1 block w-full p-2.5 border border-gray-300 rounded-lg shadow-sm
-                         bg-white text-gray-900
-                         dark:bg-gray-700 dark:border-gray-600 dark:text-white
-                         focus:ring-purple-500 focus:border-purple-500"
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-med-teal focus:border-med-teal outline-none transition-all"
             />
           </div>
+        </div>
 
-          {/* Pharmaceutical Dealer License */}
-          <div className="mb-4">
-            <label
-              htmlFor="pharmaDealerLicense"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-            >
-              Pharmaceutical Dealer License
-            </label>
-            <input
-              type="text"
-              id="pharmaDealerLicense"
-              name="pharmaDealerLicense"
-              placeholder="Enter Pharmaceutical Dealer License Number"
-              required
-              value={formData.pharmaDealerLicense}
-              onChange={handleChange}
-              className="mt-1 block w-full p-2.5 border border-gray-300 rounded-lg shadow-sm
-                         bg-white text-gray-900
-                         dark:bg-gray-700 dark:border-gray-600 dark:text-white
-                         focus:ring-purple-500 focus:border-purple-500"
-            />
-          </div>
+        <div className="space-y-1">
+          <label className="block text-sm font-medium text-gray-700">Pharma Dealer License</label>
+          <input
+            type="text"
+            name="pharmaDealerLicense"
+            required
+            value={formData.pharmaDealerLicense}
+            onChange={handleChange}
+            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-med-teal focus:border-med-teal outline-none transition-all"
+          />
+        </div>
 
-          {/* Drug Import/Export License */}
-          <div className="mb-4">
-            <label
-              htmlFor="importExportLicense"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-            >
-              Drug Import/Export License (if applicable)
-            </label>
-            <input
-              type="text"
-              id="importExportLicense"
-              name="importExportLicense"
-              placeholder="Enter Import/Export License Number"
-              value={formData.importExportLicense}
-              onChange={handleChange}
-              className="mt-1 block w-full p-2.5 border border-gray-300 rounded-lg shadow-sm
-                         bg-white text-gray-900
-                         dark:bg-gray-700 dark:border-gray-600 dark:text-white
-                         focus:ring-purple-500 focus:border-purple-500"
-            />
-          </div>
+        <div className="space-y-1">
+          <label className="block text-sm font-medium text-gray-700">Import/Export License</label>
+          <input
+            type="text"
+            name="importExportLicense"
+            value={formData.importExportLicense}
+            onChange={handleChange}
+            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-med-teal focus:border-med-teal outline-none transition-all"
+          />
+        </div>
 
-          {/* Compliance with Storage/Handling Regulations */}
-          <div className="mb-4">
-            <label
-              htmlFor="complianceDoc"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-            >
-              Compliance with Storage/Handling Regulations
-            </label>
-            <input
-              type="text"
-              id="complianceDoc"
-              name="complianceDoc"
-              placeholder="Enter Compliance Document Number"
-              required
-              value={formData.complianceDoc}
-              onChange={handleChange}
-              className="mt-1 block w-full p-2.5 border border-gray-300 rounded-lg shadow-sm
-                         bg-white text-gray-900
-                         dark:bg-gray-700 dark:border-gray-600 dark:text-white
-                         focus:ring-purple-500 focus:border-purple-500"
-            />
-          </div>
+        <div className="space-y-1">
+          <label className="block text-sm font-medium text-gray-700">Compliance Document</label>
+          <input
+            type="text"
+            name="complianceDoc"
+            required
+            value={formData.complianceDoc}
+            onChange={handleChange}
+            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-med-teal focus:border-med-teal outline-none transition-all"
+          />
+        </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-purple-600 hover:bg-purple-700 disabled:bg-gray-400
-                       text-white font-bold py-2 px-4 rounded-lg shadow-md
-                       focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50"
-          >
-            {loading ? 'Submitting...' : 'Submit License Information'}
-          </button>
-        </form>
-      </div>
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full bg-med-teal hover:bg-med-teal/90 disabled:bg-gray-400 text-white font-bold py-4 rounded-full shadow-lg transition-all transform hover:scale-[1.01]"
+        >
+          {loading ? 'Processing...' : 'Submit Application'}
+        </button>
+      </form>
     </div>
   );
 };
