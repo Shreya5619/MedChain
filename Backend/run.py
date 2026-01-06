@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify
+from pymongo import MongoClient
 from web3 import Web3
 import json
 from eth_account import Account
@@ -11,6 +12,12 @@ load_dotenv()
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "http://localhost:5173"}}) 
+
+MONGO_URL = os.getenv("MONGO_URI")
+# MongoDB Connection
+client = MongoClient(MONGO_URL)
+db = client['medchain']
+collection = db['transactions'] 
 
 infura_url = os.getenv("INFURA_URL_SEPOLIA")
 w3 = Web3(Web3.HTTPProvider(infura_url))
@@ -84,7 +91,25 @@ def add():
             data['receiverPubKey'],
             data['status']
         )
-        return jsonify({"message": "Transaction successful", "tx_hash": receipt.transactionHash.hex()}), 200
+        
+        tx_hash = receipt.transactionHash.hex()
+        
+        # Store in MongoDB
+        try:
+            mongo_data = {
+                "transaction_hash": tx_hash,
+                "drugId": data['drugId'],
+                "batchId": data['batchId'],
+                "senderPubKey": data['senderPubKey'],
+                "receiverPubKey": data['receiverPubKey'],
+                "status": data['status'],
+                "verified": False
+            }
+            collection.insert_one(mongo_data)
+        except Exception as mongo_err:
+            print("MongoDB Insertion Error:", str(mongo_err))
+            
+        return jsonify({"message": "Transaction successful", "tx_hash": tx_hash}), 200
     except Exception as e:
         print("Error adding transaction:", str(e))
         return jsonify({"error": str(e)}), 500
@@ -154,13 +179,32 @@ def drugs_by_user():
         # Each tuple: (drugId, batch, senderPubKey, receiverPubKey, status, timestamp)
         tx_list = []
         for tx in transactions:
+            # Query MongoDB for verification status
+            # We match using available fields. Note: 'batch' in contract vs 'batchId' in our mongo struct
+            mongo_record = collection.find_one({
+                "drugId": tx[0],
+                "batchId": tx[1],
+                "senderPubKey": tx[2],
+                "receiverPubKey": tx[3],
+                "status": tx[4]
+            })
+            
+            verified_status = False
+            tx_hash_display = "Not Recorded"
+            
+            if mongo_record:
+                verified_status = mongo_record.get('verified', False)
+                tx_hash_display = mongo_record.get('transaction_hash', "Unknown")
+            
             tx_dict = {
                 "drugId": tx[0],
                 "batch": tx[1],
                 "senderPubKey": tx[2],
                 "receiverPubKey": tx[3],
                 "status": tx[4],
-                "timestamp": tx[5]
+                "timestamp": tx[5],
+                "verified": verified_status,
+                "tx_hash": tx_hash_display
             }
             tx_list.append(tx_dict)
         
@@ -169,6 +213,25 @@ def drugs_by_user():
         print("Error fetching transactions by user:", str(e))
         return jsonify({"message": f"Failed to fetch transactions: {str(e)}"}), 500
 
+
+@app.route('/verifyTransaction', methods=['POST'])
+def verify_transaction():
+    data = request.get_json()
+    tx_hash = data.get('tx_hash')
+    is_legit = data.get('is_legit')
+    
+    if not tx_hash:
+        return jsonify({"message": "Missing tx_hash"}), 400
+        
+    if is_legit:
+        result = collection.update_one({"transaction_hash": tx_hash}, {"$set": {"verified": True}})
+        if result.modified_count > 0:
+            return jsonify({"message": "Transaction verified"}), 200
+        else:
+            return jsonify({"message": "Transaction not found or already verified"}), 404
+    else:
+        # If not legit, we don't verify. Logic can be expanded if needed.
+        return jsonify({"message": "Transaction marked as not legit"}), 200
 
 if __name__ == "__main__":
     app.run(debug=True)

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Search, Package, Clock, Hash, MapPin, AlertCircle } from "lucide-react";
+import { Search, Package, Clock, Hash, MapPin, AlertCircle, CheckCircle, X } from "lucide-react";
 import { motion } from "framer-motion";
 
 const DrugsByUser = () => {
@@ -8,34 +8,61 @@ const DrugsByUser = () => {
   const [loading, setLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
 
-  React.useEffect(() => {
-    const fetchTransactions = async () => {
-      const storedUser = localStorage.getItem("publicKey");
-      if (!storedUser) {
-        alert("Please authenticate first.");
-        return;
+  const fetchTransactions = async () => {
+    const storedUser = localStorage.getItem("publicKey");
+    if (!storedUser) {
+      // alert("Please authenticate first.");
+      console.log("No public key found in local storage.");
+      return;
+    }
+    setUser(storedUser);
+    setLoading(true);
+    setHasSearched(true);
+    try {
+      const response = await fetch(`http://localhost:5000/drugsByUser?user=${storedUser}`);
+      const data = await response.json();
+      if (data && data.length > 0) {
+        setDrugDetails(data);
+      } else {
+        setDrugDetails([]);
       }
-      setUser(storedUser);
-      setLoading(true);
-      setHasSearched(true);
-      try {
-        const response = await fetch(`http://localhost:5000/drugsByUser?user=${storedUser}`);
-        const data = await response.json();
-        if (data && data.length > 0) {
-          setDrugDetails(data);
-        } else {
-          setDrugDetails([]);
-        }
-      } catch (error) {
-        console.error(error);
-        alert("Failed to fetch data.");
-      } finally {
-        setLoading(false);
-      }
-    };
+    } catch (error) {
+      console.error(error);
+      alert("Failed to fetch data.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  React.useEffect(() => {
     fetchTransactions();
   }, []);
+
+  const handleVerify = async (txHash: string, isLegit: boolean) => {
+    if (!txHash || txHash === "Not Recorded") return;
+
+    try {
+      const response = await fetch('http://localhost:5000/verifyTransaction', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ tx_hash: txHash, is_legit: isLegit })
+      });
+
+      if (response.ok) {
+        if (isLegit) {
+          alert("Transaction verified successfully!");
+        } else {
+          alert("Transaction marked as not legit.");
+        }
+        fetchTransactions();
+      } else {
+        alert("Failed to update status.");
+      }
+    } catch (error) {
+      console.error("Verification error:", error);
+      alert("Error verifying transaction.");
+    }
+  };
 
   return (
     <div className="bg-white p-8 rounded-3xl shadow-xl border border-gray-100">
@@ -112,6 +139,50 @@ const DrugsByUser = () => {
                   <p className="font-mono bg-white p-2 rounded border border-gray-200 truncate">
                     {drug.status}
                   </p>
+                </div>
+                <div className="md:col-span-2">
+                  <p className="text-gray-500 mb-1 flex items-center gap-1"><Hash size={14} /> Transaction Hash</p>
+                  <p className="font-mono bg-white p-2 rounded border border-gray-200 truncate text-xs text-gray-600" title={drug.tx_hash}>
+                    {drug.tx_hash || "Not Recorded"}
+                  </p>
+                </div>
+
+                {/* Verification Section */}
+                <div className="md:col-span-2 mt-2 bg-white p-4 rounded-xl border border-gray-200 flex flex-col sm:flex-row justify-between items-center gap-4">
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium text-gray-700">Verification:</span>
+                    {drug.verified ? (
+                      <span className="text-green-600 flex items-center gap-1 font-semibold bg-green-50 px-2 py-1 rounded-md border border-green-100">
+                        <CheckCircle size={16} /> Verified
+                      </span>
+                    ) : (
+                      <span className="text-amber-600 flex items-center gap-1 font-semibold bg-amber-50 px-2 py-1 rounded-md border border-amber-100">
+                        <AlertCircle size={16} /> Pending
+                      </span>
+                    )}
+                  </div>
+
+                  {!drug.verified && drug.tx_hash && drug.tx_hash !== "Not Recorded" && user === drug.receiverPubKey && (
+                    <div className="flex items-center gap-3">
+                      <p className="text-sm text-gray-500">Is this transaction legit?</p>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => handleVerify(drug.tx_hash, true)}
+                          className="p-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors"
+                          title="Verify (Legit)"
+                        >
+                          <CheckCircle size={20} />
+                        </button>
+                        <button
+                          onClick={() => handleVerify(drug.tx_hash, false)}
+                          className="p-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors"
+                          title="Reject (Not Legit)"
+                        >
+                          <X size={20} />
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </motion.div>

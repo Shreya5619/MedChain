@@ -21,6 +21,7 @@
     "js-sha256": "^0.11.1",
     "lottie-react": "^2.4.0",
     "lucide-react": "^0.469.0",
+    "mongodb": "^7.0.0",
     "qr-scanner": "^1.4.2",
     "qrcode.react": "^4.2.0",
     "react": "^18.3.1",
