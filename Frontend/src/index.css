@@ -1,1 +1,18 @@
 @import "tailwindcss";
+
+
+
+@theme {
+  --color-med-teal: #004037;
+  --color-med-teal-light: #e6f0ee;
+  --color-med-cream: #f8f7f5;
+  --color-med-blue: #0069bf;
+  --font-serif: "Lora", serif;
+  --font-sans: "Inter", sans-serif;
+}
+
+body {
+  background-color: var(--color-med-cream);
+  color: var(--color-med-teal);
+  font-family: var(--font-sans);
+}

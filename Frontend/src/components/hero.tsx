@@ -1,60 +1,79 @@
 import React from 'react';
-import Navbar from './navbar';
+import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
+import HeroImage from '../assets/hero_3d.png';
 
 const HeroSection = () => {
   return (
-    <div className="relative bg-gradient-to-r from-blue-500 to-purple-600 h-screen flex items-center justify-center space-y-2">
-      <div className='flex items-center justify-center space-y-5'>
-        <div className="absolute inset-0 bg-opacity-60 bg-black"></div>
-        <div className="relative z-10 text-center px-8 max-w-4xl">
-          <div className="flex items-center justify-center space-x-4 mb-6">
-            <img
-              className="w-20 h-20 rounded-md"
-              src="/src/components/medchainlogo.png"
-              alt="MedChain Logo"
-            />
-            <h1 className="text-4xl sm:text-6xl font-extrabold text-white">
-              MedChain
-            </h1>
-          </div>
-          <p className="text-lg sm:text-xl text-gray-200 mb-8">
-            Ensure transparency, traceability, and trust in drug distribution with our state-of-the-art blockchain solution.
-          </p>
-          <div className="flex flex-wrap justify-center gap-4">
-            <a href="/signup">
-              <button
-                className="px-6 py-3 bg-white text-purple-600 font-semibold rounded-md shadow-lg hover:bg-gray-100 transition ease-in-out duration-300"
-              >
-                Get Started
-              </button>
-            </a>
-            <a href="/aboutus">
-              <button
-                className="px-6 py-3 bg-purple-700 text-white font-semibold rounded-md shadow-lg hover:bg-purple-800 transition ease-in-out duration-300"
-              >
-                Learn More
-              </button>
-            </a>
-          </div>
-        </div>
-        <div className="absolute bottom-10 flex justify-center w-full">
-          <svg
-            className="w-6 h-6 text-white animate-bounce"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
+    <section className="relative min-h-screen flex items-center bg-med-cream overflow-hidden pt-20">
+      {/* Background Decor */}
+      <div className="absolute top-0 right-0 w-1/2 h-full bg-med-teal-light rounded-l-full opacity-50 -z-10 translate-x-1/4" />
+
+      <div className="container mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+
+        {/* Text Content */}
+        <div className="max-w-2xl">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M19 9l-7 7-7-7"
-            />
-          </svg>
+            <h1 className="text-5xl md:text-7xl font-serif font-medium text-med-teal leading-tight mb-6">
+              The Future of <br />
+              <span className="italic text-med-blue">Drug Safety</span>
+            </h1>
+            <p className="text-xl text-gray-600 mb-8 leading-relaxed">
+              MedChain ensures every pill is authentic. Real-time tracking from manufacturer to patient, secured by blockchain.
+            </p>
+
+            <div className="flex flex-wrap gap-4">
+              <Link to="/signup">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="px-8 py-4 bg-med-teal text-white text-lg font-semibold rounded-full shadow-lg hover:shadow-xl transition-all"
+                >
+                  Get Started
+                </motion.button>
+              </Link>
+              <Link to="/aboutus">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="px-8 py-4 bg-white text-med-teal border border-med-teal text-lg font-semibold rounded-full hover:bg-med-teal-light transition-all"
+                >
+                  Learn More
+                </motion.button>
+              </Link>
+            </div>
+          </motion.div>
         </div>
+
+        {/* Hero Image */}
+        <motion.div
+          initial={{ opacity: 0, x: 50 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 1, delay: 0.2 }}
+          className="relative"
+        >
+          <motion.img
+            src={HeroImage}
+            alt="Medical Supply Chain"
+            className="w-full h-auto drop-shadow-2xl rounded-2xl"
+            animate={{
+              y: [0, -20, 0],
+              rotateY: [0, 5, 0]
+            }}
+            transition={{
+              repeat: Infinity,
+              duration: 6,
+              ease: "easeInOut"
+            }}
+            style={{ perspective: 1000 }}
+          />
+        </motion.div>
       </div>
-    </div>
+    </section>
   );
 };
 

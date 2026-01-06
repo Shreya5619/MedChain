@@ -1,71 +1,61 @@
 import React from 'react';
+import { motion } from 'framer-motion';
+import { Factory, Handshake, Hospital, User } from 'lucide-react';
+
+const options = [
+  {
+    href: "manufacturer",
+    icon: <Factory size={24} />,
+    title: "Manufacturer",
+    description: "Manage production and shipments"
+  },
+  {
+    href: "intermediary",
+    icon: <Handshake size={24} />,
+    title: "Intermediary",
+    description: "Distribute and track inventory"
+  },
+  {
+    href: "signin/consumer",
+    icon: <User size={24} />,
+    title: "Consumer",
+    description: "Verify product authenticity"
+  },
+  {
+    href: "hospital",
+    icon: <Hospital size={24} />,
+    title: "Hospital",
+    description: "Manage medical inventory"
+  }
+];
 
 const Card = () => {
   return (
-    <div className="max-w-md mx-auto bg-white p-6 rounded-lg shadow-lg">
-      {/* Logo and Title */}
-      <div className="flex items-center justify-center mb-1">
-        <img className="w-24 h-15 rounded-md" src="/onlylogo.png" alt="MedChain Logo" />
-        <span className="ml-4 text-3xl font-bold text-cyan-700 font-encode tracking-wide">
-          MED CHAIN
-        </span>
+    <div className="w-full">
+      <div className="text-center mb-10">
+        <h2 className="text-3xl font-serif text-med-teal mb-2">Welcome Back</h2>
+        <p className="text-gray-500">Select your role to continue</p>
       </div>
 
-      {/* Sign-In Options */}
-      <ul className="space-y-2">
-        <li>
-          <a
-            href="manufacturer"
-            className="flex items-center p-3 text-base font-bold text-white rounded-lg bg-gradient-to-r from-blue-600 to-teal-600 hover:from-teal-600 hover:to-blue-600 hover:shadow-lg transition-all transform group"
+      <div className="grid gap-4">
+        {options.map((option, index) => (
+          <motion.a
+            key={option.title}
+            href={option.href}
+            whileHover={{ scale: 1.02, x: 5 }}
+            whileTap={{ scale: 0.98 }}
+            className="flex items-center p-4 bg-white border border-gray-100 rounded-xl shadow-sm hover:shadow-md hover:border-med-teal/30 transition-all duration-200 group"
           >
-            <img
-              className="w-10 h-10 rounded-md"
-              src="/manufacturericon.png"
-              alt="Manufacturer Icon"
-            />
-            <span className="ml-4 flex-1 font-encode">Sign in as Manufacturer</span>
-          </a>
-        </li>
-        <li>
-          <a
-            href="intermediary"
-            className="flex items-center p-3 text-base font-bold text-white rounded-lg bg-gradient-to-r from-green-600 to-blue-500 hover:from-blue-500 hover:to-green-600 hover:shadow-lg transition-all transform group"
-          >
-            <img
-              className="w-10 h-10 rounded-md"
-              src="/intericon.png"
-              alt="Intermediary Icon"
-            />
-            <span className="ml-4 flex-1 font-encode">Sign in as Intermediary</span>
-          </a>
-        </li>
-        <li>
-          <a
-            href="signin/consumer"
-            className="flex items-center p-3 text-base font-bold text-white rounded-lg bg-gradient-to-r from-cyan-500 to-teal-400 hover:from-teal-400 hover:to-cyan-500 hover:shadow-lg transition-all transform group"
-          >
-            <img
-              className="w-10 h-10 rounded-md"
-              src="/personicon.png"
-              alt="Consumer Icon"
-            />
-            <span className="ml-4 flex-1 font-encode">Sign in as Consumer</span>
-          </a>
-        </li>
-        <li>
-          <a
-            href="hospital"
-            className="flex items-center p-3 text-base font-bold text-white rounded-lg bg-gradient-to-r from-purple-600 to-blue-500 hover:from-blue-500 hover:to-purple-600 hover:shadow-lg transition-all transform group"
-          >
-            <img
-              className="w-10 h-10 rounded-md"
-              src="/hospitalicon.png"
-              alt="Hospital Icon"
-            />
-            <span className="ml-4 flex-1 font-encode">Sign in as Hospital</span>
-          </a>
-        </li>
-      </ul>
+            <div className="p-3 bg-med-teal-light text-med-teal rounded-lg group-hover:bg-med-teal group-hover:text-white transition-colors duration-200">
+              {option.icon}
+            </div>
+            <div className="ml-4 text-left">
+              <h3 className="font-semibold text-med-teal text-lg">{option.title}</h3>
+              <p className="text-sm text-gray-500">{option.description}</p>
+            </div>
+          </motion.a>
+        ))}
+      </div>
     </div>
   );
 };
