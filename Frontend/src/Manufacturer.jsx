@@ -5,6 +5,8 @@ import { createClient } from '@supabase/supabase-js';
 import { sha256 } from 'js-sha256';
 import { motion } from "framer-motion";
 import { Plus, Calendar, Package, Trash2, CheckCircle, AlertCircle } from 'lucide-react';
+import { ethers } from "ethers";
+import MedChainABI from "./MedChainABI.json";
 
 const supabase = createClient(
   import.meta.env.VITE_SUPABASE_URL,
@@ -129,14 +131,22 @@ const ManufacturerDashboard = () => {
       const orgId = localStorage.getItem("manufacture_id") || localStorage.getItem("orgId");
 
       if (!publickey) { alert("Please authenticate first"); return; }
+      if (!window.ethereum) { alert("MetaMask is required!"); return; }
 
-      // 1. Generate ID (Mocking backend call based on existing logic)
+      // 0. Fetch Config
+      const configRes = await fetch("http://localhost:5000/config");
+      const config = await configRes.json();
+      const CONTRACT_ADDRESS = config.contract_address;
+
+      if (!CONTRACT_ADDRESS) throw new Error("Contract address not found");
+
+      // 1. Generate ID (Using Backend Helper)
       const genResponse = await fetch("http://localhost:5000/genId", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           drugId: formData.drugId,
-          batch: formData.drugId,
+          batch: formData.drugId, // Note: Backend uses 'batch' param for seed
           manuDate: formData.manufacturingDate,
           expDate: formData.expiryDate,
           manufacturer_pub_key: publickey,
@@ -148,7 +158,35 @@ const ManufacturerDashboard = () => {
 
       const blockchainDrugId = genResult.drug_id;
 
-      // 2. Add Transaction
+      // 2. Blockchain Transaction via MetaMask
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const signer = await provider.getSigner();
+      const contract = new ethers.Contract(CONTRACT_ADDRESS, MedChainABI, signer);
+
+      const status = "Manufactured";
+      const receiverPubKey = "manufactured"; // Placeholder or specific logic
+
+      console.log("Sending Transaction...", {
+        drugId: formData.drugId,
+        batch: blockchainDrugId,
+        sender: publickey,
+        receiver: receiverPubKey,
+        status: status
+      });
+
+      const tx = await contract.addTransaction(
+        formData.drugId,
+        blockchainDrugId,
+        publickey,
+        receiverPubKey,
+        status
+      );
+
+      console.log("Transaction Sent:", tx.hash);
+      await tx.wait(); // Wait for confirmation
+      console.log("Transaction Confirmed");
+
+      // 3. Store in Backend (DB)
       const addResponse = await fetch("http://localhost:5000/add", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -156,24 +194,25 @@ const ManufacturerDashboard = () => {
           drugId: formData.drugId,
           batchId: blockchainDrugId,
           senderPubKey: publickey,
-          receiverPubKey: "manufactured",
-          status: "Manufactured",
+          receiverPubKey: receiverPubKey,
+          status: status,
+          tx_hash: tx.hash
         }),
       });
       const addResult = await addResponse.json();
-      if (!addResponse.ok) throw new Error(addResult.error || "Failed to add transaction");
+      if (!addResponse.ok) throw new Error(addResult.error || "Failed to add transaction to DB");
 
-      // 3. Store in Supabase
+      // 4. Store in Supabase
       await storeDrugInSupabase(blockchainDrugId);
 
-      // 4. Update UI
+      // 5. Update UI
       await loadDrugsFromDB();
       setFormData({ ...formData, drugId: "", batchNumber: "", manufacturingDate: "", expiryDate: "" });
-      alert(`✅ Batch Created Successfully!\nBatch ID: ${blockchainDrugId}`);
+      alert(`✅ Batch Created Successfully!\nBatch ID: ${blockchainDrugId}\nTx Hash: ${tx.hash}`);
 
     } catch (error) {
       console.error("Upload Error:", error);
-      alert(`Failed: ${error.message}`);
+      alert(`Failed: ${error.message || error.reason || error}`);
     } finally {
       setLoading(false);
     }

@@ -1,0 +1,219 @@
+[
+    {
+        "inputs": [
+            {
+                "internalType": "string",
+                "name": "drugId",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "batchId",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "senderPubKey",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "receiverPubKey",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "status",
+                "type": "string"
+            }
+        ],
+        "name": "addTransaction",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "string",
+                "name": "drugId",
+                "type": "string"
+            },
+            {
+                "indexed": false,
+                "internalType": "string",
+                "name": "batch",
+                "type": "string"
+            },
+            {
+                "indexed": false,
+                "internalType": "string",
+                "name": "senderPubKey",
+                "type": "string"
+            },
+            {
+                "indexed": false,
+                "internalType": "string",
+                "name": "receiverPubKey",
+                "type": "string"
+            },
+            {
+                "indexed": false,
+                "internalType": "string",
+                "name": "status",
+                "type": "string"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "timestamp",
+                "type": "uint256"
+            }
+        ],
+        "name": "DrugTransactionAdded",
+        "type": "event"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "string",
+                "name": "drugId",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "batch",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "manuDate",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "expDate",
+                "type": "string"
+            },
+            {
+                "internalType": "string",
+                "name": "manufacturerPubKey",
+                "type": "string"
+            }
+        ],
+        "name": "generateDrugId",
+        "outputs": [
+            {
+                "internalType": "string",
+                "name": "",
+                "type": "string"
+            }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "string",
+                "name": "batchId",
+                "type": "string"
+            }
+        ],
+        "name": "getDrugTransactions",
+        "outputs": [
+            {
+                "components": [
+                    {
+                        "internalType": "string",
+                        "name": "drugId",
+                        "type": "string"
+                    },
+                    {
+                        "internalType": "string",
+                        "name": "batch",
+                        "type": "string"
+                    },
+                    {
+                        "internalType": "string",
+                        "name": "senderPubKey",
+                        "type": "string"
+                    },
+                    {
+                        "internalType": "string",
+                        "name": "receiverPubKey",
+                        "type": "string"
+                    },
+                    {
+                        "internalType": "string",
+                        "name": "status",
+                        "type": "string"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "timestamp",
+                        "type": "uint256"
+                    }
+                ],
+                "internalType": "struct MedChain.DrugTransaction[]",
+                "name": "",
+                "type": "tuple[]"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "string",
+                "name": "pubKey",
+                "type": "string"
+            }
+        ],
+        "name": "getTransactionsByPublicKey",
+        "outputs": [
+            {
+                "components": [
+                    {
+                        "internalType": "string",
+                        "name": "drugId",
+                        "type": "string"
+                    },
+                    {
+                        "internalType": "string",
+                        "name": "batch",
+                        "type": "string"
+                    },
+                    {
+                        "internalType": "string",
+                        "name": "senderPubKey",
+                        "type": "string"
+                    },
+                    {
+                        "internalType": "string",
+                        "name": "receiverPubKey",
+                        "type": "string"
+                    },
+                    {
+                        "internalType": "string",
+                        "name": "status",
+                        "type": "string"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "timestamp",
+                        "type": "uint256"
+                    }
+                ],
+                "internalType": "struct MedChain.DrugTransaction[]",
+                "name": "",
+                "type": "tuple[]"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    }
+]
