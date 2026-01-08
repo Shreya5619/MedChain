@@ -144,13 +144,13 @@ const DrugsByUser = () => {
                   <p className="text-gray-500 mb-1 flex items-center gap-1"><Hash size={14} /> Transaction Hash</p>
                   {drug.tx_hash && drug.tx_hash !== "Not Recorded" ? (
                     <a
-                      href={`https://sepolia.etherscan.io/tx/${drug.tx_hash}`}
+                      href={`https://sepolia.etherscan.io/tx/0x${drug.tx_hash}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="font-mono bg-white p-2 rounded border border-gray-200 truncate text-xs text-blue-600 hover:text-blue-800 underline block"
                       title={drug.tx_hash}
                     >
-                      {drug.tx_hash}
+                      {"0x" + drug.tx_hash}
                     </a>
                   ) : (
                     <p className="font-mono bg-white p-2 rounded border border-gray-200 truncate text-xs text-gray-600">
