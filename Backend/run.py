@@ -6,6 +6,7 @@ from eth_account import Account
 from flask_cors import CORS
 from dotenv import load_dotenv
 import os
+from pymongo.errors import ConnectionFailure
 
 load_dotenv()
 
@@ -18,7 +19,12 @@ MONGO_URL = os.getenv("MONGO_URI")
 client = MongoClient(MONGO_URL)
 db = client['medchain']
 collection = db['transactions'] 
-
+try:
+    # This will raise an exception if the server is not reachable
+    client.admin.command('ping')
+    print("MongoDB connection OK")
+except ConnectionFailure as e:
+    print("MongoDB connection failed:", e)
 infura_url = os.getenv("INFURA_URL_SEPOLIA")
 w3 = Web3(Web3.HTTPProvider(infura_url))
 
