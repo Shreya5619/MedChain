@@ -29,6 +29,17 @@ const ManufacturerDashboard = () => {
   });
 
   useEffect(() => {
+    const storedKey = localStorage.getItem("privateKey");
+    const storedOrgId = localStorage.getItem("manufacture_id") || localStorage.getItem("orgId");
+
+    if (storedKey || storedOrgId) {
+      setFormData(prev => ({
+        ...prev,
+        manufacture_id: storedOrgId || "",
+        privkey: storedKey || ""
+      }));
+    }
+
     checkStoredAuth();
     loadDrugsFromDB();
   }, []);

@@ -20,6 +20,16 @@ const IntermediaryDashboard = () => {
   });
 
   useEffect(() => {
+    const storedKey = localStorage.getItem("intermediaryPrivateKey");
+    const storedOrgId = localStorage.getItem("intermediaryId");
+
+    if (storedKey || storedOrgId) {
+      setAuthData(prev => ({
+        ...prev,
+        intermediaryId: storedOrgId || "",
+        privateKey: storedKey || ""
+      }));
+    }
     checkStoredAuth();
   }, []);
 
