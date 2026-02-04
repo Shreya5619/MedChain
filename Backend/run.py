@@ -265,11 +265,13 @@ def search_drug():
     
     return jsonify({"drug_transactions": tx_list}), 200
 
-@app.route('/drugsByUser', methods=['GET'])
+@app.route('/drugsByUser', methods=['POST'])
 def drugs_by_user():
-    user_pub_key = request.args.get('user')
-    batch_id = request.args.get('batchId')
-    
+    data = request.get_json()
+    user_pub_key = data.get('publicKey')
+    batch_id = data.get('batchId')
+    print("user",user_pub_key)
+    print("batch",batch_id)
     query = {
         "$or": [  # sender OR receiver
             {"senderPubKey": user_pub_key},

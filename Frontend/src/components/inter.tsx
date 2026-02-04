@@ -7,6 +7,7 @@ const DrugsByIntermediary = () => {
   const [drugDetails, setDrugDetails] = useState([]);
   const [loading, setLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
+  const BACKEND_URL = window.location.hostname === 'localhost' ? 'http://localhost:5000' : "http://10.120.154.141:5000";
 
   const fetchTransactions = async () => {
     const storedUser = localStorage.getItem("intermediaryPublicKey");
@@ -19,8 +20,12 @@ const DrugsByIntermediary = () => {
     setLoading(true);
     setHasSearched(true);
     try {
-      const BACKEND_URL = window.location.hostname === 'localhost' ? 'http://localhost:5000' : 'http://10.120.154.141:5000';
-      const response = await fetch(`${BACKEND_URL}/drugsByUser?user=${user}`);
+      //const response = await fetch(`${BACKEND_URL}/drugsByUser?user=${user}`);
+      const response = await fetch(`${BACKEND_URL}/drugsByUser`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ publicKey: storedUser }),
+      });
       const data = await response.json();
       if (data && data.length > 0) {
         setDrugDetails(data);
@@ -40,10 +45,11 @@ const DrugsByIntermediary = () => {
   }, []);
 
   const handleVerify = async (txHash: string, isLegit: boolean) => {
-    if (!txHash || txHash === "Not Recorded") return;
+    if (!txHash || txHash === "NotRecorded") return;
 
     try {
-      const response = await fetch('http://localhost:5000/verifyTransaction', {
+      const BACKEND_URL = window.location.hostname === 'localhost' ? 'http://localhost:5000' : BACKEND_URL;
+      const response = await fetch(`${BACKEND_URL}/verifyTransaction`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ tx_hash: txHash, is_legit: isLegit })
