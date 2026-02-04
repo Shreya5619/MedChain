@@ -28,31 +28,31 @@ const ConsumerSigninCard: React.FC = () => {
         setLoading(true);
 
         try {
-            let email = formData.identifier;
+            // Authenticate directly against Customer table
+            const isEmail = formData.identifier.includes('@');
 
-            if (!formData.identifier.includes('@')) {
-                const { data, error } = await supabase
-                    .from('Customer')
-                    .select('email')
-                    .eq('username', formData.identifier)
-                    .single();
+            const { data: customer, error } = await supabase
+                .from('Customer')
+                .select('*')
+                .eq(isEmail ? 'email' : 'username', formData.identifier)
+                .eq('Password', formData.password)
+                .single();
 
-                if (error || !data) throw new Error('Invalid username or password');
-
-                email = data.email;
+            if (error || !customer) {
+                throw new Error('Invalid username/email or password');
             }
 
-            const { error: authError } = await supabase.auth.signInWithPassword({
-                email,
-                password: formData.password,
-            });
-
-            if (authError) throw authError;
+            // Store user info in localStorage for session management
+            localStorage.setItem('consumer_user', JSON.stringify({
+                email: customer.email,
+                username: customer.username,
+                name: customer.Name
+            }));
 
             navigate('/consumer');
-        } catch (error) {
+        } catch (error: any) {
             console.error(error);
-            alert('Invalid credentials');
+            alert(error.message || 'Invalid credentials');
         } finally {
             setLoading(false);
         }

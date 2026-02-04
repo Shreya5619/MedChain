@@ -30,13 +30,23 @@ const ConsumerSignupCard: React.FC = () => {
         setLoading(true);
 
         try {
-            const { data: authData, error: authError } = await supabase.auth.signUp({
-                email: formData.email,
-                password: formData.password,
-            });
+            // Check if username or email already exists
+            const { data: existingUser } = await supabase
+                .from('Customer')
+                .select('email, username')
+                .or(`email.eq.${formData.email},username.eq.${formData.username}`)
+                .single();
 
-            if (authError) throw authError;
+            if (existingUser) {
+                if (existingUser.email === formData.email) {
+                    throw new Error('An account with this email already exists.');
+                }
+                if (existingUser.username === formData.username) {
+                    throw new Error('This username is already taken.');
+                }
+            }
 
+            // Insert directly into Customer table (no Supabase Auth needed)
             const { error: customerError } = await supabase
                 .from('Customer')
                 .insert({
@@ -62,7 +72,7 @@ const ConsumerSignupCard: React.FC = () => {
             <div className="text-center p-8 bg-green-50 border border-green-200 rounded-xl">
                 <h2 className="text-2xl font-serif text-med-teal mb-4">Registration Successful!</h2>
                 <p className="text-gray-700 mb-6 font-sans">
-                    Please check your email to verify your account.
+                    Your account has been created. You can now sign in.
                 </p>
                 <a
                     href="/signin/consumer"
