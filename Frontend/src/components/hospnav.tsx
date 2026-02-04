@@ -11,7 +11,7 @@ const HospNav = () => {
 
     const navLinks = [
         { name: "Dashboard", path: "/hospital", icon: <Home size={18} /> },
-        // You can add more hospital-specific links here in the future
+        { name: "Track", path: "/hospital/track", icon: <Activity size={18} /> },
     ];
 
     return (

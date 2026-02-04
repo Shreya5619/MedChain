@@ -24,6 +24,8 @@ import ConsumerSignin from './ConsumerSignin';
 
 
 
+import HospTrack from './hosptrack';
+
 function App() {
   return (
     <div className="h-full">
@@ -48,6 +50,7 @@ function App() {
           <Route path='/intermediary/track' element={<IntSearch />} />
           <Route path='/intermediary/view' element={<InterTrack />} />
           <Route path='/hospital' element={<HospitalDashboard />} />
+          <Route path='/hospital/track' element={<HospTrack />} />
           <Route path='/consumer' element={<ConsumerPage />} />
         </Routes>
       </BrowserRouter>
