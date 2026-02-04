@@ -115,7 +115,7 @@ def add():
                 "senderPubKey": data['senderPubKey'],
                 "receiverPubKey": data['receiverPubKey'],
                 "status": data['status'],
-                "verified": False,
+                "verified": data.get('verified', False),
                 "timestamp": time.time()
             }
             collection.insert_one(mongo_data)

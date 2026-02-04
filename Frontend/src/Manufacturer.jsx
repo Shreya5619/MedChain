@@ -170,6 +170,45 @@ const ManufacturerDashboard = () => {
       const blockchainDrugId = genResult.drug_id;
 
       // 2. Blockchain Transaction via MetaMask
+      if (!window.ethereum) { alert("MetaMask is required!"); return; }
+
+      try {
+        const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+        const sepoliaChainId = '0xaa36a7'; // Sepolia Hex Chain ID
+
+        if (chainId !== sepoliaChainId) {
+          try {
+            await window.ethereum.request({
+              method: 'wallet_switchEthereumChain',
+              params: [{ chainId: sepoliaChainId }],
+            });
+          } catch (switchError) {
+            // This error code indicates that the chain has not been added to MetaMask.
+            if (switchError.code === 4902) {
+              await window.ethereum.request({
+                method: 'wallet_addEthereumChain',
+                params: [{
+                  chainId: sepoliaChainId,
+                  chainName: 'Sepolia Test Network',
+                  nativeCurrency: {
+                    name: 'Sepolia ETH',
+                    symbol: 'ETH',
+                    decimals: 18
+                  },
+                  rpcUrls: ['https://rpc.ankr.com/eth_sepolia'],
+                  blockExplorerUrls: ['https://sepolia.etherscan.io']
+                }]
+              });
+            } else {
+              throw switchError;
+            }
+          }
+        }
+      } catch (err) {
+        console.error("Network Error:", err);
+        throw new Error("Please switch to Sepolia Test Network in MetaMask.");
+      }
+
       const provider = new ethers.BrowserProvider(window.ethereum);
       const signer = await provider.getSigner();
       const contract = new ethers.Contract(CONTRACT_ADDRESS, MedChainABI, signer);
@@ -207,7 +246,8 @@ const ManufacturerDashboard = () => {
           senderPubKey: publickey,
           receiverPubKey: receiverPubKey,
           status: status,
-          tx_hash: tx.hash
+          tx_hash: tx.hash,
+          verified: true,
         }),
       });
       const addResult = await addResponse.json();
