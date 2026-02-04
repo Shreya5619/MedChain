@@ -1,5 +1,5 @@
 import { useState } from "react";
-import IntNav from "./components/intnav";
+import HospNav from "./components/hospnav";
 import HospitalAdd from "./components/hospitaladd";
 
 const HospitalDashboard = () => {
@@ -49,7 +49,7 @@ const HospitalDashboard = () => {
 
   return (
     <div className="min-h-screen bg-med-cream font-sans">
-      <IntNav />
+      <HospNav />
 
       <div className="pt-24 pb-12 px-4 md:px-8 max-w-7xl mx-auto flex flex-col items-center">
         <div className="w-full max-w-2xl mt-8">
