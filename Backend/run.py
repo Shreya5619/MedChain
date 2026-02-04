@@ -101,8 +101,15 @@ def add():
     try:
         # Transaction is now handled by Frontend (MetaMask)
         # We just need to store the details
+        receipt = send_add_transaction(
+            data['drugId'],
+            data['batchId'],
+            data['senderPubKey'],       # Make sure the frontend sends this field with a valid address
+            data['receiverPubKey'],
+            data['status']
+        )
         
-        tx_hash = data.get('tx_hash')
+        tx_hash = receipt.transactionHash.hex()
         if not tx_hash:
             return jsonify({"error": "Transaction hash is required"}), 400
         
