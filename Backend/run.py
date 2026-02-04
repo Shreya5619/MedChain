@@ -14,7 +14,12 @@ load_dotenv()
 
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "http://localhost:5173"}}) 
+#CORS(app, resources={r"/*": {"origins": "http://localhost:5173"}}) 
+CORS(app, resources={r"/*": {
+    "origins": "*",
+    "methods": ["GET", "POST", "OPTIONS"],
+    "allow_headers": ["Content-Type", "Authorization"]
+}})
 
 MONGO_URL = os.getenv("MONGO_URI")
 # MongoDB Connection
@@ -238,7 +243,7 @@ def generate_drug():
 def search_drug():
     data = request.get_json()
     batchId = data.get('batchId')  # Use batchId from frontend
-    
+    print("batch",batchId)
     # Search for either 'batch' (old data) or 'batchId' (new data)
     query = {
         "$or": [
