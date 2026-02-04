@@ -1,9 +1,8 @@
-flask
-pymongo
-web3
-json
-eth_account
-flask_cors
-dotenv
-os
-certifi
+flask==3.0.0
+pymongo==4.6.1
+web3==6.15.1
+eth_account==0.10.0
+flask-cors==4.0.0
+python-dotenv==1.0.0
+certifi==2024.2.2
+gunicorn==21.2.0

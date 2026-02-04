@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Package, User, FileText, Send, Activity, Info } from 'lucide-react';
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
+
 const HospitalAdd = () => {
   const [formData, setFormData] = useState({
     drugId: "",
@@ -20,7 +22,7 @@ const HospitalAdd = () => {
   const handleUpload = async () => {
     setLoading(true);
     try {
-      const response = await fetch("http://localhost:5000/add", {
+      const response = await fetch(`${BACKEND_URL}/add`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

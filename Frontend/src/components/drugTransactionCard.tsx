@@ -52,7 +52,7 @@ const DrugTransactionCard: React.FC = () => {
   const fetchDrugData = async (query: string) => {
     setLoading(true);
     try {
-      const BACKEND_URL = window.location.hostname === 'localhost' ? 'http://localhost:5000' : process.env.BACKEND_URL;
+      const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
       const response = await fetch(`${BACKEND_URL}/searchDrug`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

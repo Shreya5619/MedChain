@@ -2,6 +2,8 @@ import { useState } from "react";
 import HospNav from "./components/hospnav";
 import HospitalAdd from "./components/hospitaladd";
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
+
 const HospitalDashboard = () => {
   const [drugs, setDrugs] = useState([]);
   const [formData, setFormData] = useState({
@@ -17,7 +19,7 @@ const HospitalDashboard = () => {
 
   const handleUpload = async () => {
     try {
-      const response = await fetch("http://localhost:5000/add", {
+      const response = await fetch(`${BACKEND_URL}/add`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

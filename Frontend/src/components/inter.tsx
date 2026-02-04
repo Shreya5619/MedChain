@@ -2,12 +2,13 @@ import React, { useState } from "react";
 import { Search, Package, Clock, Hash, MapPin, AlertCircle, CheckCircle, X } from "lucide-react";
 import { motion } from "framer-motion";
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
+
 const DrugsByIntermediary = () => {
   const [user, setUser] = useState("");
   const [drugDetails, setDrugDetails] = useState([]);
   const [loading, setLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
-  const BACKEND_URL = window.location.hostname === 'localhost' ? 'http://localhost:5000' : "http://10.120.154.141:5000";
 
   const fetchTransactions = async () => {
     const storedUser = localStorage.getItem("intermediaryPublicKey");
@@ -48,7 +49,6 @@ const DrugsByIntermediary = () => {
     if (!txHash || txHash === "NotRecorded") return;
 
     try {
-      const BACKEND_URL = window.location.hostname === 'localhost' ? 'http://localhost:5000' : BACKEND_URL;
       const response = await fetch(`${BACKEND_URL}/verifyTransaction`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

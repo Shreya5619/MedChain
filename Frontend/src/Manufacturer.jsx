@@ -8,6 +8,8 @@ import { Plus, Calendar, Package, Trash2, CheckCircle, AlertCircle } from 'lucid
 import { ethers } from "ethers";
 import MedChainABI from "./MedChainABI.json";
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
+
 const supabase = createClient(
   import.meta.env.VITE_SUPABASE_URL,
   import.meta.env.VITE_SUPABASE_ANON_KEY
@@ -145,14 +147,14 @@ const ManufacturerDashboard = () => {
       if (!window.ethereum) { alert("MetaMask is required!"); return; }
 
       // 0. Fetch Config
-      const configRes = await fetch("http://localhost:5000/config");
+      const configRes = await fetch(`${BACKEND_URL}/config`);
       const config = await configRes.json();
       const CONTRACT_ADDRESS = config.contract_address;
 
       if (!CONTRACT_ADDRESS) throw new Error("Contract address not found");
 
       // 1. Generate ID (Using Backend Helper)
-      const genResponse = await fetch("http://localhost:5000/genId", {
+      const genResponse = await fetch(`${BACKEND_URL}/genId`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -237,7 +239,7 @@ const ManufacturerDashboard = () => {
       console.log("Transaction Confirmed");
 
       // 3. Store in Backend (DB)
-      const addResponse = await fetch("http://localhost:5000/add", {
+      const addResponse = await fetch(`${BACKEND_URL}/add`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { Search, Package, Clock, Hash, MapPin, AlertCircle, CheckCircle, X } from "lucide-react";
 import { motion } from "framer-motion";
-const BACKEND_URL = window.location.hostname === 'localhost' ? 'http://localhost:5000' : "http://10.120.154.141:5000";
+
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
 const DrugsByUser = () => {
   const [user, setUser] = useState("");
   const [drugDetails, setDrugDetails] = useState([]);

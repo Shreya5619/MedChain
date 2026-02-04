@@ -321,7 +321,7 @@ javascript
    const handleScan = async (data: any) => {
        if (data?.text) {
            // Log scan to MongoDB
-           await fetch('http://localhost:5000/log-qr-scan', {
+           await fetch(`${VITE_BACKEND_URL}/log-qr-scan`, {
                method: 'POST',
                headers: {'Content-Type': 'application/json'},
                body: JSON.stringify({
