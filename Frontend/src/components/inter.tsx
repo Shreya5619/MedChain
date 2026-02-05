@@ -49,6 +49,7 @@ const DrugsByIntermediary = () => {
     if (!txHash || txHash === "NotRecorded") return;
 
     try {
+      //const BACKEND_URL = window.location.hostname === 'localhost' ? 'http://localhost:5000' : BACKEND_URL;
       const response = await fetch(`${BACKEND_URL}/verifyTransaction`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

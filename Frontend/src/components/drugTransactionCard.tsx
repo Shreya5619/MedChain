@@ -12,6 +12,7 @@ interface TransactionDetails {
   timestamp: number;
 }
 
+const BACKEND_URL = window.location.hostname === 'localhost' ? 'http://localhost:5000' : "http://10.120.154.141:5000";
 const DrugTransactionCard: React.FC = () => {
   const [batchId, setBatchId] = useState<string>('');
   const [transactions, setTransactions] = useState<TransactionDetails[]>([]);
@@ -52,7 +53,6 @@ const DrugTransactionCard: React.FC = () => {
   const fetchDrugData = async (query: string) => {
     setLoading(true);
     try {
-      const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
       const response = await fetch(`${BACKEND_URL}/searchDrug`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
